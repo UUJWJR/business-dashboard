@@ -9,7 +9,6 @@ interface Props {
 }
 
 export default function SalesRevenueByProduct({ data, isDark, onRefresh }: Props) {
-  // Build a simple trend from composition for demo (mock trend per product)
   const productTrend: TrendChartData = {
     labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
     datasets: data.byProduct.map((p, i) => ({
@@ -22,24 +21,22 @@ export default function SalesRevenueByProduct({ data, isDark, onRefresh }: Props
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SimplePieChart
-          title="产品收入占比"
-          data={data.byProduct}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-        />
-        <SimpleLineChart
-          title="各产品收入趋势"
-          data={productTrend}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}%"
-        />
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full">
+      <SimplePieChart
+        title="产品收入占比"
+        data={data.byProduct}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+      />
+      <SimpleLineChart
+        title="各产品收入趋势"
+        data={productTrend}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+        yAxisFormatter="{value}%"
+      />
     </div>
   );
 }

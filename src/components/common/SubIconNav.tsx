@@ -10,21 +10,29 @@ interface SubIconNavItem {
 
 interface SubIconNavProps {
   items: SubIconNavItem[];
-  activePath: string;
+  activePath?: string;
+  activeIndex?: number;
+  onItemClick?: (index: number) => void;
 }
 
-export default function SubIconNav({ items, activePath }: SubIconNavProps) {
+export default function SubIconNav({ items, activePath, activeIndex, onItemClick }: SubIconNavProps) {
   const navigate = useNavigate();
 
   return (
     <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-      {items.map((item) => {
+      {items.map((item, index) => {
         const Icon = item.icon;
-        const active = activePath === item.path;
+        const active = activeIndex !== undefined ? index === activeIndex : activePath === item.path;
         return (
           <button
             key={item.path}
-            onClick={() => navigate(item.path)}
+            onClick={() => {
+              if (onItemClick) {
+                onItemClick(index);
+              } else {
+                navigate(item.path);
+              }
+            }}
             className={`relative flex items-center gap-2 px-4 py-2 rounded-btn text-sm font-medium whitespace-nowrap transition-colors ${
               active
                 ? 'text-primary-700 dark:text-primary-300'

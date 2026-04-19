@@ -15,24 +15,22 @@ export default function SmartHomeBinding({ data, isDark, onRefresh }: Props) {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SimpleLineChart
-          title="套餐绑定率趋势"
-          data={data.bindingRate}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}%"
-        />
-        <SimplePieChart
-          title="套餐绑定分布"
-          data={bindingDistribution}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-        />
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full">
+      <SimpleLineChart
+        title="套餐绑定率趋势"
+        data={data.bindingRate}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+        yAxisFormatter="{value}%"
+      />
+      <SimplePieChart
+        title="套餐绑定分布"
+        data={bindingDistribution}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+      />
     </div>
   );
 }

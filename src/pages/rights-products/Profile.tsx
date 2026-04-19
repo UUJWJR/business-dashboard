@@ -17,27 +17,25 @@ export default function RightsProductsProfile({ data, isDark, onRefresh }: Props
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SimplePieChart
-          title="权益类型偏好"
-          data={data.typeDistribution}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-        />
-        <SimpleBarChart
-          title="用户年龄分布"
-          data={{
-            labels: userSegments.map((s) => s.name),
-            datasets: [{ name: '占比', values: userSegments.map((s) => s.value), color: '#6366f1' }],
-          }}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}%"
-        />
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full">
+      <SimplePieChart
+        title="权益类型偏好"
+        data={data.typeDistribution}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+      />
+      <SimpleBarChart
+        title="用户年龄分布"
+        data={{
+          labels: userSegments.map((s) => s.name),
+          datasets: [{ name: '占比', values: userSegments.map((s) => s.value), color: '#6366f1' }],
+        }}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+        yAxisFormatter="{value}%"
+      />
     </div>
   );
 }

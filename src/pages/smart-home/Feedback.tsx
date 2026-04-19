@@ -29,28 +29,26 @@ export default function SmartHomeFeedback({ data, isDark, onRefresh }: Props) {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SimpleLineChart
-          title="用户满意度趋势"
-          data={satisfactionTrend}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}"
-        />
-        <SimpleBarChart
-          title="反馈类型分布"
-          data={{
-            labels: feedbackCategories.map((c) => c.name),
-            datasets: [{ name: '反馈数', values: feedbackCategories.map((c) => c.value), color: '#6366f1' }],
-          }}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}"
-        />
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full">
+      <SimpleLineChart
+        title="用户满意度趋势"
+        data={satisfactionTrend}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+        yAxisFormatter="{value}"
+      />
+      <SimpleBarChart
+        title="反馈类型分布"
+        data={{
+          labels: feedbackCategories.map((c) => c.name),
+          datasets: [{ name: '反馈数', values: feedbackCategories.map((c) => c.value), color: '#6366f1' }],
+        }}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+        yAxisFormatter="{value}"
+      />
     </div>
   );
 }

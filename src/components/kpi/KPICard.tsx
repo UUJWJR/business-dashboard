@@ -92,11 +92,11 @@ export default function KPICard({ data, index }: KPICardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.4 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="bg-white dark:bg-surface-900 rounded-card p-5 border border-gray-100/80 dark:border-white/[0.06] shadow-card hover:shadow-card-hover dark:shadow-card-dark dark:hover:shadow-card-dark-hover transition-all cursor-pointer hover:-translate-y-0.5"
+      className="bg-white dark:bg-surface-900 rounded-card p-3 border border-gray-100/80 dark:border-white/[0.06] shadow-card hover:shadow-card-hover dark:shadow-card-dark dark:hover:shadow-card-dark-hover transition-all cursor-pointer hover:-translate-y-0.5"
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className={`p-2.5 rounded-lg ${colors.bg}`}>
-          <Icon className={`w-5 h-5 ${colors.text}`} />
+      <div className="flex items-start justify-between mb-2">
+        <div className={`p-1.5 rounded-lg ${colors.bg}`}>
+          <Icon className={`w-4 h-4 ${colors.text}`} />
         </div>
         <div className="flex flex-col items-end gap-1">
           <div
@@ -132,11 +132,11 @@ export default function KPICard({ data, index }: KPICardProps) {
         </div>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{data.title}</p>
-        <p className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+      <div className="space-y-0.5">
+        <p className="text-xs text-gray-500 dark:text-gray-400">{data.title}</p>
+        <p className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
           {formattedValue}
-          <span className="text-xs md:text-sm font-normal text-gray-500 dark:text-gray-400 ml-1">
+          <span className="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1">
             {data.unit}
           </span>
         </p>

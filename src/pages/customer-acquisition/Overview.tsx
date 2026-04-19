@@ -12,20 +12,20 @@ interface Props {
 
 export default function CustomerAcquisitionOverview({ data, isDark, onRefresh }: Props) {
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="flex flex-col gap-2 h-full">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 flex-none">
         {data.kpis.map((kpi, index) => (
           <KPICard key={kpi.id} data={kpi} index={index} />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-1 min-h-0">
         <SimpleLineChart
           title="新增客户趋势"
           data={data.monthlyTrend}
           isDark={isDark}
           onRefresh={onRefresh}
-          className="col-span-1"
+          className="h-full"
           yAxisFormatter="{value}万"
         />
         <SimplePieChart
@@ -33,21 +33,7 @@ export default function CustomerAcquisitionOverview({ data, isDark, onRefresh }:
           data={data.typeDistribution}
           isDark={isDark}
           onRefresh={onRefresh}
-          className="col-span-1"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 gap-6">
-        <SimpleBarChart
-          title="新增渠道分布"
-          data={{
-            labels: data.channelDistribution.map((c) => c.name),
-            datasets: [{ name: '新增占比', values: data.channelDistribution.map((c) => c.value), color: '#6366f1' }],
-          }}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}%"
+          className="h-full"
         />
       </div>
     </div>

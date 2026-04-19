@@ -9,7 +9,6 @@ interface Props {
 }
 
 export default function SalesRevenueByChannel({ data, isDark, onRefresh }: Props) {
-  // Build a mock trend for channels
   const channelTrend: TrendChartData = {
     labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
     datasets: data.byChannel.map((c, i) => ({
@@ -22,28 +21,26 @@ export default function SalesRevenueByChannel({ data, isDark, onRefresh }: Props
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SimpleBarChart
-          title="渠道收入分布"
-          data={{
-            labels: data.byChannel.map((c) => c.name),
-            datasets: [{ name: '收入占比', values: data.byChannel.map((c) => c.value), color: '#6366f1' }],
-          }}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}%"
-        />
-        <SimpleLineChart
-          title="渠道收入趋势"
-          data={channelTrend}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}%"
-        />
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full">
+      <SimpleBarChart
+        title="渠道收入分布"
+        data={{
+          labels: data.byChannel.map((c) => c.name),
+          datasets: [{ name: '收入占比', values: data.byChannel.map((c) => c.value), color: '#6366f1' }],
+        }}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+        yAxisFormatter="{value}%"
+      />
+      <SimpleLineChart
+        title="渠道收入趋势"
+        data={channelTrend}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+        yAxisFormatter="{value}%"
+      />
     </div>
   );
 }

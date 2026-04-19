@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { FileSpreadsheet, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import type { LucideIcon } from 'lucide-react';
 
 interface ExportButtonProps {
   onExport: () => void;
   label?: string;
+  icon?: LucideIcon;
 }
 
-export function ExportButton({ onExport, label = '导出报表' }: ExportButtonProps) {
+export function ExportButton({ onExport, label = '导出报表', icon: Icon = FileSpreadsheet }: ExportButtonProps) {
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
@@ -30,7 +32,7 @@ export function ExportButton({ onExport, label = '导出报表' }: ExportButtonP
       {loading ? (
         <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
-        <FileSpreadsheet className="w-4 h-4" />
+        <Icon className="w-4 h-4" />
       )}
       {label}
     </motion.button>

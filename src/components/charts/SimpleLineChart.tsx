@@ -89,13 +89,15 @@ export default function SimpleLineChart({
 
   return (
     <ChartCard title={title} onRefresh={onRefresh} chartRef={chartRef} className={className}>
-      <ReactECharts
-        ref={chartRef}
-        option={option}
-        style={{ height: 340 }}
-        opts={{ renderer: 'canvas' }}
-        notMerge
-      />
+      <div className="flex-1 min-h-0">
+        <ReactECharts
+          ref={chartRef}
+          option={option}
+          style={{ height: '100%' }}
+          opts={{ renderer: 'canvas' }}
+          notMerge
+        />
+      </div>
     </ChartCard>
   );
 }

@@ -21,24 +21,22 @@ export default function CustomerAcquisitionProfile({ data, isDark, onRefresh }: 
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SimplePieChart
-          title="客户类型占比"
-          data={data.typeDistribution}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-        />
-        <SimpleLineChart
-          title="各类型客户趋势"
-          data={typeTrend}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}%"
-        />
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full">
+      <SimplePieChart
+        title="客户类型占比"
+        data={data.typeDistribution}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+      />
+      <SimpleLineChart
+        title="各类型客户趋势"
+        data={typeTrend}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+        yAxisFormatter="{value}%"
+      />
     </div>
   );
 }

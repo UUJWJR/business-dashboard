@@ -27,10 +27,10 @@ export default function ChartCard({ title, children, onRefresh, chartRef, classN
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`bg-white dark:bg-surface-900 rounded-card p-5 border border-gray-100/80 dark:border-white/[0.06] shadow-card dark:shadow-card-dark ${className}`}
+      className={`bg-white dark:bg-surface-900 rounded-card p-4 border border-gray-100/80 dark:border-white/[0.06] shadow-card dark:shadow-card-dark flex flex-col h-full ${className}`}
     >
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+      <div className="flex items-center justify-between mb-3 flex-none">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
           {title}
         </h3>
         <div className="flex items-center gap-1">

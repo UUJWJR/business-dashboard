@@ -21,24 +21,22 @@ export default function HomeNetworkingSolution({ data, isDark, onRefresh }: Prop
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SimplePieChart
-          title="组网方案分布"
-          data={data.solutionDistribution}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-        />
-        <SimpleLineChart
-          title="各方案占比趋势"
-          data={solutionTrend}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}%"
-        />
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full">
+      <SimplePieChart
+        title="组网方案分布"
+        data={data.solutionDistribution}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+      />
+      <SimpleLineChart
+        title="各方案占比趋势"
+        data={solutionTrend}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+        yAxisFormatter="{value}%"
+      />
     </div>
   );
 }

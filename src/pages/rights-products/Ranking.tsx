@@ -9,8 +9,8 @@ interface Props {
 
 export default function RightsProductsRanking({ data, isDark, onRefresh }: Props) {
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-6">
+    <div className="flex flex-col gap-2 h-full">
+      <div className="flex-1 min-h-0">
         <SimpleBarChart
           title="权益活跃度 TOP10"
           data={{
@@ -19,30 +19,30 @@ export default function RightsProductsRanking({ data, isDark, onRefresh }: Props
           }}
           isDark={isDark}
           onRefresh={onRefresh}
-          className="col-span-1"
+          className="h-full"
           yAxisFormatter="{value}"
         />
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-card p-5 border border-gray-100 dark:border-gray-700 shadow-card dark:shadow-card-dark">
-        <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-card p-3 border border-gray-100 dark:border-gray-700 shadow-card dark:shadow-card-dark flex-none max-h-52 overflow-auto">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
           权益活跃度明细
         </h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-gray-100 dark:border-gray-700">
-                <th className="text-left py-2 px-3 text-gray-500 dark:text-gray-400 font-medium">排名</th>
-                <th className="text-left py-2 px-3 text-gray-500 dark:text-gray-400 font-medium">权益名称</th>
-                <th className="text-right py-2 px-3 text-gray-500 dark:text-gray-400 font-medium">活跃用户</th>
+                <th className="text-left py-1 px-2 text-gray-500 dark:text-gray-400 font-medium">排名</th>
+                <th className="text-left py-1 px-2 text-gray-500 dark:text-gray-400 font-medium">权益名称</th>
+                <th className="text-right py-1 px-2 text-gray-500 dark:text-gray-400 font-medium">活跃用户</th>
               </tr>
             </thead>
             <tbody>
               {data.topRights.map((right, index) => (
                 <tr key={right.name} className="border-b border-gray-50 dark:border-gray-800">
-                  <td className="py-2 px-3 text-gray-900 dark:text-white font-medium">{index + 1}</td>
-                  <td className="py-2 px-3 text-gray-900 dark:text-white">{right.name}</td>
-                  <td className="py-2 px-3 text-right text-gray-900 dark:text-white">{right.activeUsers.toLocaleString()}</td>
+                  <td className="py-1 px-2 text-gray-900 dark:text-white font-medium">{index + 1}</td>
+                  <td className="py-1 px-2 text-gray-900 dark:text-white">{right.name}</td>
+                  <td className="py-1 px-2 text-right text-gray-900 dark:text-white">{right.activeUsers.toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>

@@ -31,28 +31,26 @@ export default function CustomerAcquisitionChurn({ data, isDark, onRefresh }: Pr
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SimpleBarChart
-          title="流失风险分布"
-          data={{
-            labels: data.churnRisk.map((c) => c.level),
-            datasets: [{ name: '客户数', values: data.churnRisk.map((c) => c.count), color: '#6366f1' }],
-          }}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}"
-        />
-        <SimpleLineChart
-          title="流失风险趋势"
-          data={churnTrend}
-          isDark={isDark}
-          onRefresh={onRefresh}
-          className="col-span-1"
-          yAxisFormatter="{value}"
-        />
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full">
+      <SimpleBarChart
+        title="流失风险分布"
+        data={{
+          labels: data.churnRisk.map((c) => c.level),
+          datasets: [{ name: '客户数', values: data.churnRisk.map((c) => c.count), color: '#6366f1' }],
+        }}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+        yAxisFormatter="{value}"
+      />
+      <SimpleLineChart
+        title="流失风险趋势"
+        data={churnTrend}
+        isDark={isDark}
+        onRefresh={onRefresh}
+        className="h-full"
+        yAxisFormatter="{value}"
+      />
     </div>
   );
 }

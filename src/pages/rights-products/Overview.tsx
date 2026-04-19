@@ -12,20 +12,20 @@ interface Props {
 
 export default function RightsProductsOverview({ data, isDark, onRefresh }: Props) {
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="flex flex-col gap-2 h-full">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 flex-none">
         {data.kpis.map((kpi, index) => (
           <KPICard key={kpi.id} data={kpi} index={index} />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-[2] min-h-0">
         <SimpleLineChart
           title="权益订阅趋势"
           data={data.monthlyTrend}
           isDark={isDark}
           onRefresh={onRefresh}
-          className="col-span-1"
+          className="h-full"
           yAxisFormatter="{value}万"
         />
         <SimplePieChart
@@ -33,11 +33,11 @@ export default function RightsProductsOverview({ data, isDark, onRefresh }: Prop
           data={data.typeDistribution}
           isDark={isDark}
           onRefresh={onRefresh}
-          className="col-span-1"
+          className="h-full"
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
+      <div className="flex-1 min-h-0">
         <SimpleBarChart
           title="权益活跃度 TOP10"
           data={{
@@ -46,7 +46,7 @@ export default function RightsProductsOverview({ data, isDark, onRefresh }: Prop
           }}
           isDark={isDark}
           onRefresh={onRefresh}
-          className="col-span-1"
+          className="h-full"
           yAxisFormatter="{value}"
         />
       </div>
