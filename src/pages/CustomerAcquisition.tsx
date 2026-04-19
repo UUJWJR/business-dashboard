@@ -5,6 +5,14 @@ import { useTheme } from '../hooks/useTheme';
 import ModuleLayout from '../components/layout/ModuleLayout';
 import SubIconNav from '../components/common/SubIconNav';
 import TimeRangeSelector from '../components/common/TimeRangeSelector';
+import { ExportButton } from '../components/common/ExportButton';
+import {
+  kpiToSheet,
+  trendToSheet,
+  distributionToSheet,
+  churnRiskToSheet,
+  exportToExcel,
+} from '../utils/excelExport';
 import { useModuleData } from '../hooks/useModuleData';
 import type { TimeRange, CustomerAcquisitionData } from '../types';
 import CustomerAcquisitionOverview from './customer-acquisition/Overview';
@@ -51,8 +59,21 @@ export default function CustomerAcquisition() {
 
   const activePath = location.pathname;
 
+  const handleExport = () => {
+    if (!data) return;
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    exportToExcel(`客户新增报表_${dateStr}`, [
+      kpiToSheet(data.kpis),
+      trendToSheet(data.dailyTrend, '每日趋势'),
+      trendToSheet(data.monthlyTrend, '月度趋势'),
+      distributionToSheet(data.typeDistribution, '客户类型'),
+      distributionToSheet(data.channelDistribution, '渠道分布'),
+      churnRiskToSheet(data.churnRisk, '流失预警'),
+    ]);
+  };
+
   return (
-    <ModuleLayout title="客户新增" icon={<Users className="w-6 h-6" />}>
+    <ModuleLayout title="客户新增" icon={<Users className="w-6 h-6" />} actions={<ExportButton onExport={handleExport} />}>
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center justify-between">
           <SubIconNav items={subNavItems} activePath={activePath} />

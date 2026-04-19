@@ -5,6 +5,14 @@ import { useTheme } from '../hooks/useTheme';
 import ModuleLayout from '../components/layout/ModuleLayout';
 import SubIconNav from '../components/common/SubIconNav';
 import TimeRangeSelector from '../components/common/TimeRangeSelector';
+import { ExportButton } from '../components/common/ExportButton';
+import {
+  kpiToSheet,
+  trendToSheet,
+  distributionToSheet,
+  regionToSheet,
+  exportToExcel,
+} from '../utils/excelExport';
 import { useModuleData } from '../hooks/useModuleData';
 import type { TimeRange, SalesRevenueData } from '../types';
 import SalesRevenueOverview from './sales-revenue/Overview';
@@ -52,8 +60,21 @@ export default function SalesRevenue() {
 
   const activePath = location.pathname;
 
+  const handleExport = () => {
+    if (!data) return;
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    exportToExcel(`销售收入报表_${dateStr}`, [
+      kpiToSheet(data.kpis),
+      trendToSheet(data.monthlyTrend, '月度趋势'),
+      distributionToSheet(data.composition, '收入构成'),
+      regionToSheet(data.byRegion, '分地区'),
+      distributionToSheet(data.byProduct, '分产品'),
+      distributionToSheet(data.byChannel, '分渠道'),
+    ]);
+  };
+
   return (
-    <ModuleLayout title="销售收入" icon={<TrendingUp className="w-6 h-6" />}>
+    <ModuleLayout title="销售收入" icon={<TrendingUp className="w-6 h-6" />} actions={<ExportButton onExport={handleExport} />}>
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center justify-between">
           <SubIconNav items={subNavItems} activePath={activePath} />

@@ -5,6 +5,14 @@ import { useTheme } from '../hooks/useTheme';
 import ModuleLayout from '../components/layout/ModuleLayout';
 import SubIconNav from '../components/common/SubIconNav';
 import TimeRangeSelector from '../components/common/TimeRangeSelector';
+import { ExportButton } from '../components/common/ExportButton';
+import {
+  kpiToSheet,
+  trendToSheet,
+  distributionToSheet,
+  regionToSheet,
+  exportToExcel,
+} from '../utils/excelExport';
 import { useModuleData } from '../hooks/useModuleData';
 import type { TimeRange, BroadbandData } from '../types';
 import BroadbandOverview from './broadband/Overview';
@@ -51,8 +59,20 @@ export default function Broadband() {
 
   const activePath = location.pathname;
 
+  const handleExport = () => {
+    if (!data) return;
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    exportToExcel(`宽带新增报表_${dateStr}`, [
+      kpiToSheet(data.kpis),
+      trendToSheet(data.monthlyTrend, '月度趋势'),
+      distributionToSheet(data.speedDistribution, '速率分布'),
+      regionToSheet(data.byRegion, '区域覆盖'),
+      distributionToSheet(data.competitorShare, '竞品份额'),
+    ]);
+  };
+
   return (
-    <ModuleLayout title="宽带新增" icon={<Wifi className="w-6 h-6" />}>
+    <ModuleLayout title="宽带新增" icon={<Wifi className="w-6 h-6" />} actions={<ExportButton onExport={handleExport} />}>
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center justify-between">
           <SubIconNav items={subNavItems} activePath={activePath} />

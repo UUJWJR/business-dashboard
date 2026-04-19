@@ -5,6 +5,15 @@ import { useTheme } from '../hooks/useTheme';
 import ModuleLayout from '../components/layout/ModuleLayout';
 import SubIconNav from '../components/common/SubIconNav';
 import TimeRangeSelector from '../components/common/TimeRangeSelector';
+import { ExportButton } from '../components/common/ExportButton';
+import {
+  kpiToSheet,
+  trendToSheet,
+  distributionToSheet,
+  regionToSheet,
+  statusStatsToSheet,
+  exportToExcel,
+} from '../utils/excelExport';
 import { useModuleData } from '../hooks/useModuleData';
 import type { TimeRange, HomeNetworkingData } from '../types';
 import HomeNetworkingOverview from './home-networking/Overview';
@@ -51,8 +60,20 @@ export default function HomeNetworking() {
 
   const activePath = location.pathname;
 
+  const handleExport = () => {
+    if (!data) return;
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    exportToExcel(`家庭组网报表_${dateStr}`, [
+      kpiToSheet(data.kpis),
+      trendToSheet(data.monthlyTrend, '月度趋势'),
+      distributionToSheet(data.solutionDistribution, '方案分布'),
+      regionToSheet(data.byRegion, '区域覆盖'),
+      statusStatsToSheet(data.workorderStats, '工单状态'),
+    ]);
+  };
+
   return (
-    <ModuleLayout title="家庭组网" icon={<Network className="w-6 h-6" />}>
+    <ModuleLayout title="家庭组网" icon={<Network className="w-6 h-6" />} actions={<ExportButton onExport={handleExport} />}>
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center justify-between">
           <SubIconNav items={subNavItems} activePath={activePath} />

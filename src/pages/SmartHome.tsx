@@ -5,6 +5,14 @@ import { useTheme } from '../hooks/useTheme';
 import ModuleLayout from '../components/layout/ModuleLayout';
 import SubIconNav from '../components/common/SubIconNav';
 import TimeRangeSelector from '../components/common/TimeRangeSelector';
+import { ExportButton } from '../components/common/ExportButton';
+import {
+  kpiToSheet,
+  trendToSheet,
+  distributionToSheet,
+  topProductsToSheet,
+  exportToExcel,
+} from '../utils/excelExport';
 import { useModuleData } from '../hooks/useModuleData';
 import type { TimeRange, SmartHomeData } from '../types';
 import SmartHomeOverview from './smart-home/Overview';
@@ -51,8 +59,20 @@ export default function SmartHome() {
 
   const activePath = location.pathname;
 
+  const handleExport = () => {
+    if (!data) return;
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    exportToExcel(`智家产品报表_${dateStr}`, [
+      kpiToSheet(data.kpis),
+      trendToSheet(data.monthlyTrend, '月度趋势'),
+      distributionToSheet(data.productDistribution, '产品分布'),
+      trendToSheet(data.bindingRate, '绑定率'),
+      topProductsToSheet(data.topProducts, '产品排行'),
+    ]);
+  };
+
   return (
-    <ModuleLayout title="智家产品" icon={<Home className="w-6 h-6" />}>
+    <ModuleLayout title="智家产品" icon={<Home className="w-6 h-6" />} actions={<ExportButton onExport={handleExport} />}>
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center justify-between">
           <SubIconNav items={subNavItems} activePath={activePath} />

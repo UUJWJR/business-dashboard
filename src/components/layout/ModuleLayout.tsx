@@ -7,9 +7,10 @@ interface ModuleLayoutProps {
   title: string;
   icon: React.ReactNode;
   children: React.ReactNode;
+  actions?: React.ReactNode;
 }
 
-export default function ModuleLayout({ title, icon, children }: ModuleLayoutProps) {
+export default function ModuleLayout({ title, icon, children, actions }: ModuleLayoutProps) {
   const { isDark, toggleTheme } = useTheme();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
@@ -28,13 +29,16 @@ export default function ModuleLayout({ title, icon, children }: ModuleLayoutProp
       <main className="pt-16 pl-0 md:pl-56 transition-all duration-300">
         <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
           {/* Module title area */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400">
-              {icon}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400">
+                {icon}
+              </div>
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+                {title}
+              </h1>
             </div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-              {title}
-            </h1>
+            {actions && <div className="flex items-center gap-2">{actions}</div>}
           </div>
 
           {children}
