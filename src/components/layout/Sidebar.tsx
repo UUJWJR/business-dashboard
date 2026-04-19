@@ -11,6 +11,7 @@ import {
   ChevronRight,
   X,
   Smartphone,
+  BarChart3,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -72,13 +73,16 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
             <button
               key={item.id}
               onClick={() => handleNavigate(item.path)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium transition-colors relative ${
                 active
-                  ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ? 'text-primary-600 dark:text-primary-400 bg-primary-50/50 dark:bg-primary-900/10'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-surface-100 dark:hover:bg-white/[0.04]'
               }`}
             >
-              <Icon className="w-5 h-5 flex-shrink-0" />
+              {active && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-primary-500 rounded-r-full" />
+              )}
+              <Icon className="w-5 h-5 flex-shrink-0 ml-0.5" />
               <AnimatePresence>
                 {!collapsed && (
                   <motion.span
@@ -99,12 +103,12 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
       <div className="px-2 hidden md:block">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          className="w-full flex items-center justify-center p-2 rounded-btn hover:bg-surface-100 dark:hover:bg-white/[0.04] transition-colors"
         >
           {collapsed ? (
-            <ChevronRight className="w-5 h-5 text-gray-400" />
+            <ChevronRight className="w-5 h-5 text-gray-400 dark:text-gray-500" />
           ) : (
-            <ChevronLeft className="w-5 h-5 text-gray-400" />
+            <ChevronLeft className="w-5 h-5 text-gray-400 dark:text-gray-500" />
           )}
         </button>
       </div>
@@ -115,7 +119,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex fixed left-0 top-16 bottom-0 z-30 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ${
+        className={`hidden md:flex fixed left-0 top-16 bottom-0 z-30 bg-white dark:bg-surface-900 border-r border-gray-200/80 dark:border-white/[0.06] transition-all duration-300 ${
           collapsed ? 'w-16' : 'w-56'
         }`}
       >
@@ -142,12 +146,12 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="md:hidden fixed left-0 top-0 bottom-0 z-50 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-xl"
+              className="md:hidden fixed left-0 top-0 bottom-0 z-50 w-64 bg-white dark:bg-surface-900 border-r border-gray-200/80 dark:border-white/[0.06] shadow-float dark:shadow-float-dark"
             >
-              <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-800">
+              <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200/80 dark:border-white/[0.06]">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">B</span>
+                  <div className="w-8 h-8 rounded-btn bg-primary-600 flex items-center justify-center shadow-sm">
+                    <BarChart3 className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
                     菜单
@@ -155,10 +159,10 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
                 </div>
                 <button
                   onClick={onMobileClose}
-                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="p-2 rounded-btn hover:bg-surface-100 dark:hover:bg-white/[0.06] transition-colors"
                   aria-label="关闭菜单"
                 >
-                  <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto">

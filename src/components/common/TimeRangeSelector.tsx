@@ -15,12 +15,12 @@ const options: { value: TimeRange; label: string }[] = [
 
 export default function TimeRangeSelector({ value, onChange }: TimeRangeSelectorProps) {
   return (
-    <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 overflow-x-auto scrollbar-hide">
+    <div className="inline-flex bg-surface-100 dark:bg-white/[0.04] rounded-btn p-1 overflow-x-auto scrollbar-hide ring-1 ring-transparent dark:ring-white/[0.04]">
       {options.map((opt) => (
         <button
           key={opt.value}
           onClick={() => onChange(opt.value)}
-          className={`relative px-3 md:px-4 py-1.5 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+          className={`relative px-3 md:px-4 py-1.5 text-sm font-medium rounded-btn transition-colors whitespace-nowrap ${
             value === opt.value
               ? 'text-primary-700 dark:text-primary-300'
               : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
@@ -29,7 +29,7 @@ export default function TimeRangeSelector({ value, onChange }: TimeRangeSelector
           {value === opt.value && (
             <motion.div
               layoutId="timeRangeBg"
-              className="absolute inset-0 bg-white dark:bg-gray-700 rounded-md shadow-sm"
+              className="absolute inset-0 bg-white dark:bg-surface-800 rounded-btn shadow-sm dark:shadow-inner-glow"
               transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
             />
           )}

@@ -9,16 +9,16 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
+          50: '#f0f5ff',
+          100: '#e0eaff',
+          200: '#c2d5ff',
+          300: '#94b5ff',
+          400: '#5e8fff',
+          500: '#3b6ef5',
+          600: '#2554e8',
+          700: '#1d43d4',
+          800: '#1e39ab',
+          900: '#1f3586',
         },
         success: {
           50: '#f0fdf4',
@@ -39,16 +39,29 @@ export default {
           50: '#eff6ff',
           500: '#3b82f6',
           600: '#2563eb',
+        },
+        surface: {
+          0: '#ffffff',
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          800: '#1e293b',
+          900: '#0f172a',
+          950: '#020617',
         }
       },
       boxShadow: {
-        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
-        'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
-        'card-dark': '0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3)',
-        'card-dark-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4)',
+        'card': '0 0 0 1px rgba(0, 0, 0, 0.03), 0 1px 2px 0 rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.03)',
+        'card-hover': '0 0 0 1px rgba(0, 0, 0, 0.03), 0 4px 12px -2px rgba(0, 0, 0, 0.06), 0 8px 24px -4px rgba(0, 0, 0, 0.04)',
+        'card-dark': '0 0 0 1px rgba(255, 255, 255, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.15)',
+        'card-dark-hover': '0 0 0 1px rgba(255, 255, 255, 0.06), 0 8px 24px -4px rgba(0, 0, 0, 0.4), 0 4px 12px -2px rgba(0, 0, 0, 0.2)',
+        'float': '0 12px 40px -8px rgba(0, 0, 0, 0.12)',
+        'float-dark': '0 12px 40px -8px rgba(0, 0, 0, 0.5)',
+        'inner-glow': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
       },
       borderRadius: {
-        'card': '12px',
+        'card': '10px',
+        'btn': '8px',
       },
       fontFamily: {
         sans: [

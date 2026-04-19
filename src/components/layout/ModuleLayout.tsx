@@ -15,7 +15,7 @@ export default function ModuleLayout({ title, icon, children, actions }: ModuleL
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen bg-surface-50 dark:bg-surface-950 transition-colors duration-300">
       <Navbar
         isDark={isDark}
         toggleTheme={toggleTheme}
@@ -31,10 +31,10 @@ export default function ModuleLayout({ title, icon, children, actions }: ModuleL
           {/* Module title area */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400">
+              <div className="p-2 rounded-btn bg-primary-50/60 dark:bg-primary-900/15 text-primary-600 dark:text-primary-400 ring-1 ring-primary-100/60 dark:ring-primary-800/40">
                 {icon}
               </div>
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
                 {title}
               </h1>
             </div>

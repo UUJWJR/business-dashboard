@@ -25,16 +25,16 @@ export default function SubIconNav({ items, activePath }: SubIconNavProps) {
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
-            className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+            className={`relative flex items-center gap-2 px-4 py-2 rounded-btn text-sm font-medium whitespace-nowrap transition-colors ${
               active
                 ? 'text-primary-700 dark:text-primary-300'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-surface-100 dark:hover:bg-white/[0.04]'
             }`}
           >
             {active && (
               <motion.div
                 layoutId="subIconNavBg"
-                className="absolute inset-0 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-100 dark:border-primary-800"
+                className="absolute inset-0 bg-primary-50/60 dark:bg-primary-900/10 rounded-btn ring-1 ring-primary-100/60 dark:ring-primary-800/40"
                 transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
               />
             )}

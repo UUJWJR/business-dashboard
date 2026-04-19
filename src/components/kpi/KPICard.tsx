@@ -92,7 +92,7 @@ export default function KPICard({ data, index }: KPICardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.4 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="bg-white dark:bg-gray-800 rounded-card p-5 border border-gray-100 dark:border-gray-700 shadow-card hover:shadow-card-hover dark:shadow-card-dark dark:hover:shadow-card-dark-hover transition-shadow cursor-pointer"
+      className="bg-white dark:bg-surface-900 rounded-card p-5 border border-gray-100/80 dark:border-white/[0.06] shadow-card hover:shadow-card-hover dark:shadow-card-dark dark:hover:shadow-card-dark-hover transition-all cursor-pointer hover:-translate-y-0.5"
     >
       <div className="flex items-start justify-between mb-4">
         <div className={`p-2.5 rounded-lg ${colors.bg}`}>
