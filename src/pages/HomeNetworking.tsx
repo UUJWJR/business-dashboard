@@ -12,6 +12,12 @@ import SlideSection from '../components/common/SlideSection';
 import { exportSlidesToPDF } from '../utils/pdfExport';
 import { useModuleData } from '../hooks/useModuleData';
 import type { TimeRange, HomeNetworkingData } from '../types';
+import {
+  homeNetworkingOverviewSummary,
+  homeNetworkingSolutionSummary,
+  homeNetworkingCoverageSummary,
+  homeNetworkingWorkorderSummary,
+} from '../utils/slideSummary';
 import HomeNetworkingOverview from './home-networking/Overview';
 import HomeNetworkingSolution from './home-networking/Solution';
 import HomeNetworkingCoverage from './home-networking/Coverage';
@@ -177,7 +183,7 @@ export default function HomeNetworking() {
             <SlideSection
               id="slide-0"
               title="总览"
-              description="本页展示家庭组网业务的核心运营指标与整体趋势。顶部KPI卡片实时反映组网订单数、同比增长率、目标达成率及覆盖率等关键数据。中部折线图呈现近半年月度订单走势，右侧饼图拆解组网方案构成，底部条形图对比各区域组网覆盖与目标完成情况，帮助管理者快速把握组网业务全局状况。"
+              description={homeNetworkingOverviewSummary(data)}
               pageNumber={1}
               totalPages={4}
             >
@@ -192,7 +198,7 @@ export default function HomeNetworking() {
             <SlideSection
               id="slide-1"
               title="方案分析"
-              description="本页从组网方案维度分析业务结构。左侧饼图展示各组网方案在当前周期的占比，右侧折线图追踪不同方案近半年的占比变化趋势，识别热门方案增长亮点与潜在需求转移，为方案优化和资源配置提供数据支撑。"
+              description={homeNetworkingSolutionSummary(data)}
               pageNumber={2}
               totalPages={4}
             >
@@ -207,7 +213,7 @@ export default function HomeNetworking() {
             <SlideSection
               id="slide-2"
               title="覆盖地图"
-              description="本页聚焦区域维度的组网覆盖表现与目标完成度。顶部条形图直观对比各区域实际覆盖率与目标值的差距，底部表格详细列出各区域的目标完成率，通过颜色标签快速识别达标与未达标区域，辅助制定区域网络建设和资源投放策略。"
+              description={homeNetworkingCoverageSummary(data)}
               pageNumber={3}
               totalPages={4}
             >
@@ -222,7 +228,7 @@ export default function HomeNetworking() {
             <SlideSection
               id="slide-3"
               title="工单管理"
-              description="本页从工单维度监控家庭组网的售后服务状况。顶部饼图和条形图展示各状态工单的数量分布与对比，底部表格详细列出各状态工单的数量及占比。通过监控工单处理状态，辅助制定服务优化和资源配置方案。"
+              description={homeNetworkingWorkorderSummary(data)}
               pageNumber={4}
               totalPages={4}
             >

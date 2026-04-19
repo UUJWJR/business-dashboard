@@ -12,6 +12,12 @@ import SlideSection from '../components/common/SlideSection';
 import { exportSlidesToPDF } from '../utils/pdfExport';
 import { useModuleData } from '../hooks/useModuleData';
 import type { TimeRange, SalesRevenueData } from '../types';
+import {
+  salesRevenueOverviewSummary,
+  salesRevenueByRegionSummary,
+  salesRevenueByProductSummary,
+  salesRevenueByChannelSummary,
+} from '../utils/slideSummary';
 import SalesRevenueOverview from './sales-revenue/Overview';
 import SalesRevenueByRegion from './sales-revenue/ByRegion';
 import SalesRevenueByProduct from './sales-revenue/ByProduct';
@@ -180,7 +186,7 @@ export default function SalesRevenue() {
             <SlideSection
               id="slide-0"
               title="总览"
-              description="本页展示销售收入的核心运营指标与整体趋势。顶部 KPI 卡片实时反映总收入、同比增长、目标达成率及客户均价等关键数据。中部折线图呈现近半年月度收入走势，右侧饼图拆解收入业务构成，帮助管理者快速把握全局经营状况。"
+              description={salesRevenueOverviewSummary(data)}
               pageNumber={1}
               totalPages={4}
             >
@@ -195,7 +201,7 @@ export default function SalesRevenue() {
             <SlideSection
               id="slide-1"
               title="分地区"
-              description="本页聚焦区域维度的收入表现与目标达成情况。条形图直观对比各区域实际收入与年度目标，颜色区分达标与未达标区域。下方表格细化列出每个区域的收入额、目标值及完成率，便于快速锁定高绩效区域和需要重点关注的潜力市场。"
+              description={salesRevenueByRegionSummary(data)}
               pageNumber={2}
               totalPages={4}
             >
@@ -210,7 +216,7 @@ export default function SalesRevenue() {
             <SlideSection
               id="slide-2"
               title="分产品"
-              description="本页从产品维度分析收入结构。左侧环形图展示各产品线在当前周期的收入占比，中心标注总计数值。右侧折线图追踪各产品近半年的收入变化趋势，识别增长亮点与下滑风险，为产品迭代和资源配置提供数据支撑。"
+              description={salesRevenueByProductSummary(data)}
               pageNumber={3}
               totalPages={4}
             >
@@ -225,7 +231,7 @@ export default function SalesRevenue() {
             <SlideSection
               id="slide-3"
               title="分渠道"
-              description="本页从渠道维度剖析收入来源与效率。左侧条形图呈现各渠道的收入贡献及占比，右侧折线图展示渠道收入的半年走势变化。通过对比线上、线下及合作伙伴等渠道的增减趋势，辅助制定渠道投放预算与运营策略调整方案。"
+              description={salesRevenueByChannelSummary(data)}
               pageNumber={4}
               totalPages={4}
             >

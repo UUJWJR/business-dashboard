@@ -12,6 +12,12 @@ import SlideSection from '../components/common/SlideSection';
 import { exportSlidesToPDF } from '../utils/pdfExport';
 import { useModuleData } from '../hooks/useModuleData';
 import type { TimeRange, RightsProductsData } from '../types';
+import {
+  rightsProductsOverviewSummary,
+  rightsProductsRankingSummary,
+  rightsProductsProfileSummary,
+  rightsProductsRevenueSummary,
+} from '../utils/slideSummary';
 import RightsProductsOverview from './rights-products/Overview';
 import RightsProductsRanking from './rights-products/Ranking';
 import RightsProductsProfile from './rights-products/Profile';
@@ -177,7 +183,7 @@ export default function RightsProducts() {
             <SlideSection
               id="slide-0"
               title="总览"
-              description="本页展示权益产品业务的核心运营指标与整体趋势。顶部KPI卡片实时反映权益订阅数、同比增长率、目标达成率及活跃用户占比等关键数据。中部折线图呈现近半年月度订阅走势，右侧饼图拆解权益类型构成，底部条形图展示权益活跃度TOP10排名，帮助管理者快速把握权益业务全局状况。"
+              description={rightsProductsOverviewSummary(data)}
               pageNumber={1}
               totalPages={4}
             >
@@ -192,7 +198,7 @@ export default function RightsProducts() {
             <SlideSection
               id="slide-1"
               title="权益排行"
-              description="本页聚焦权益产品的活跃度排行与明细数据。顶部条形图直观展示各权益的活跃用户数排名，底部表格详细列出排名、权益名称及活跃用户数据。通过分析高热度权益与低热度权益，辅助制定权益推广策略和产品优化方案。"
+              description={rightsProductsRankingSummary(data)}
               pageNumber={2}
               totalPages={4}
             >
@@ -207,7 +213,7 @@ export default function RightsProducts() {
             <SlideSection
               id="slide-2"
               title="用户画像"
-              description="本页从用户维度分析权益产品的受众特征。左侧饼图展示各权益类型的用户偏好分布，右侧条形图展示用户年龄段的占比分布。通过洞察用户画像，辅助制定精准营销策略和权益产品设计方向。"
+              description={rightsProductsProfileSummary(data)}
               pageNumber={3}
               totalPages={4}
             >
@@ -222,7 +228,7 @@ export default function RightsProducts() {
             <SlideSection
               id="slide-3"
               title="收入分析"
-              description="本页从收入维度分析权益产品的变现能力。左侧饼图展示各权益类型的收入贡献占比，右侧条形图对比各类权益的收入数据。通过分析收入结构，辅助制定权益定价策略和收入优化方案。"
+              description={rightsProductsRevenueSummary(data)}
               pageNumber={4}
               totalPages={4}
             >

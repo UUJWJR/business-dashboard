@@ -12,6 +12,12 @@ import SlideSection from '../components/common/SlideSection';
 import { exportSlidesToPDF } from '../utils/pdfExport';
 import { useModuleData } from '../hooks/useModuleData';
 import type { TimeRange, CustomerAcquisitionData } from '../types';
+import {
+  customerAcquisitionOverviewSummary,
+  customerAcquisitionProfileSummary,
+  customerAcquisitionChannelSummary,
+  customerAcquisitionChurnSummary,
+} from '../utils/slideSummary';
 import CustomerAcquisitionOverview from './customer-acquisition/Overview';
 import CustomerAcquisitionProfile from './customer-acquisition/Profile';
 import CustomerAcquisitionChannel from './customer-acquisition/Channel';
@@ -177,7 +183,7 @@ export default function CustomerAcquisition() {
             <SlideSection
               id="slide-0"
               title="总览"
-              description="本页展示客户新增的核心运营指标与整体趋势。顶部 KPI 卡片实时反映新增客户数、同比增长率、目标达成率及客户获取成本等关键数据。中部折线图呈现近半年月度新增客户走势，右侧饼图拆解客户类型构成，帮助管理者快速把握全局获客状况。"
+              description={customerAcquisitionOverviewSummary(data)}
               pageNumber={1}
               totalPages={4}
             >
@@ -192,7 +198,7 @@ export default function CustomerAcquisition() {
             <SlideSection
               id="slide-1"
               title="客户画像"
-              description="本页从客户类型维度分析新增客群结构。左侧饼图展示各类型客户在当前周期的占比，右侧折线图追踪不同类型客户近半年的新增变化趋势，识别高价值客群增长亮点与潜在下滑风险，为精准营销和产品定位提供数据支撑。"
+              description={customerAcquisitionProfileSummary(data)}
               pageNumber={2}
               totalPages={4}
             >
@@ -207,7 +213,7 @@ export default function CustomerAcquisition() {
             <SlideSection
               id="slide-2"
               title="渠道分析"
-              description="本页聚焦渠道维度的获客表现与效率对比。左侧条形图直观对比各渠道的新增客户占比，右侧折线图展示各渠道近半年的获客趋势变化。通过对比线上、线下及合作伙伴等渠道的增减趋势，辅助制定渠道投放预算与运营策略调整方案。"
+              description={customerAcquisitionChannelSummary(data)}
               pageNumber={3}
               totalPages={4}
             >
@@ -222,7 +228,7 @@ export default function CustomerAcquisition() {
             <SlideSection
               id="slide-3"
               title="流失预警"
-              description="本页从流失风险维度监控客户健康度。左侧条形图呈现各风险等级的客户数量分布，右侧折线图追踪近半年高、中、低风险客户的趋势变化。通过提前识别高风险客群，辅助制定客户挽留策略，降低流失率并提升客户生命周期价值。"
+              description={customerAcquisitionChurnSummary(data)}
               pageNumber={4}
               totalPages={4}
             >

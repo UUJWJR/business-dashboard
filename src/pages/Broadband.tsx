@@ -12,6 +12,12 @@ import SlideSection from '../components/common/SlideSection';
 import { exportSlidesToPDF } from '../utils/pdfExport';
 import { useModuleData } from '../hooks/useModuleData';
 import type { TimeRange, BroadbandData } from '../types';
+import {
+  broadbandOverviewSummary,
+  broadbandSpeedSummary,
+  broadbandCoverageSummary,
+  broadbandCompetitorSummary,
+} from '../utils/slideSummary';
 import BroadbandOverview from './broadband/Overview';
 import BroadbandSpeed from './broadband/Speed';
 import BroadbandCoverage from './broadband/Coverage';
@@ -177,7 +183,7 @@ export default function Broadband() {
             <SlideSection
               id="slide-0"
               title="总览"
-              description="本页展示宽带新增业务的核心运营指标与整体趋势。顶部KPI卡片实时反映新增宽带数、同比增长率、目标达成率及平均带宽等关键数据。中部折线图呈现近半年月度新增宽带走势，右侧饼图拆解带宽速率构成，底部条形图对比各区域新增宽带与目标完成情况，帮助管理者快速把握全局宽带拓展状况。"
+              description={broadbandOverviewSummary(data)}
               pageNumber={1}
               totalPages={4}
             >
@@ -192,7 +198,7 @@ export default function Broadband() {
             <SlideSection
               id="slide-1"
               title="速率分析"
-              description="本页从带宽速率维度分析新增宽带结构。左侧饼图展示各速率档次在当前周期的占比，右侧折线图追踪不同速率档次近半年的变化趋势，识别高带宽用户增长亮点与潜在需求变化，为带宽升级策略和产品定价提供数据支撑。"
+              description={broadbandSpeedSummary(data)}
               pageNumber={2}
               totalPages={4}
             >
@@ -207,7 +213,7 @@ export default function Broadband() {
             <SlideSection
               id="slide-2"
               title="区域覆盖"
-              description="本页聚焦区域维度的宽带新增表现与目标完成度。顶部条形图直观对比各区域实际新增宽带与目标值的差距，底部表格详细列出各区域的目标完成率，通过颜色标签快速识别达标与未达标区域，辅助制定区域资源投放与营销策略调整方案。"
+              description={broadbandCoverageSummary(data)}
               pageNumber={3}
               totalPages={4}
             >
@@ -222,7 +228,7 @@ export default function Broadband() {
             <SlideSection
               id="slide-3"
               title="竞品对比"
-              description="本页从市场竞争维度监控宽带市场份额。左侧饼图展示各竞品运营商的市场份额分布，右侧条形图对比各竞品的份额数据。通过对比分析识别自身竞争优势与不足，辅助制定差异化竞争策略和市场拓展计划。"
+              description={broadbandCompetitorSummary(data)}
               pageNumber={4}
               totalPages={4}
             >

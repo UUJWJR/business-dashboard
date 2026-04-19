@@ -12,6 +12,12 @@ import SlideSection from '../components/common/SlideSection';
 import { exportSlidesToPDF } from '../utils/pdfExport';
 import { useModuleData } from '../hooks/useModuleData';
 import type { TimeRange, SmartHomeData } from '../types';
+import {
+  smartHomeOverviewSummary,
+  smartHomeRankingSummary,
+  smartHomeBindingSummary,
+  smartHomeFeedbackSummary,
+} from '../utils/slideSummary';
 import SmartHomeOverview from './smart-home/Overview';
 import SmartHomeRanking from './smart-home/Ranking';
 import SmartHomeBinding from './smart-home/Binding';
@@ -177,7 +183,7 @@ export default function SmartHome() {
             <SlideSection
               id="slide-0"
               title="总览"
-              description="本页展示智家产品业务的核心运营指标与整体趋势。顶部KPI卡片实时反映产品销量、同比增长率、目标达成率及活跃用户数等关键数据。中部折线图呈现近半年月度销量走势，右侧饼图拆解产品品类构成，底部折线图追踪智家套餐绑定率变化，帮助管理者快速把握智家业务全局状况。"
+              description={smartHomeOverviewSummary(data)}
               pageNumber={1}
               totalPages={4}
             >
@@ -192,7 +198,7 @@ export default function SmartHome() {
             <SlideSection
               id="slide-1"
               title="产品排行"
-              description="本页聚焦智家产品的销量排行与明细数据。顶部条形图直观展示各产品的销量排名，底部表格详细列出排名、产品名称及销量数据。通过分析热销产品与滞销产品，辅助制定产品推广策略和库存调配方案。"
+              description={smartHomeRankingSummary(data)}
               pageNumber={2}
               totalPages={4}
             >
@@ -207,7 +213,7 @@ export default function SmartHome() {
             <SlideSection
               id="slide-2"
               title="绑定分析"
-              description="本页从套餐绑定维度分析智家产品的用户粘性。左侧折线图展示近半年套餐绑定率的趋势变化，右侧饼图展示当前已绑定与未绑定套餐的用户占比。通过监控绑定率变化，辅助制定套餐融合策略和用户留存方案。"
+              description={smartHomeBindingSummary(data)}
               pageNumber={3}
               totalPages={4}
             >
@@ -222,7 +228,7 @@ export default function SmartHome() {
             <SlideSection
               id="slide-3"
               title="用户反馈"
-              description="本页聚焦用户对智家产品的满意度与反馈分布。左侧折线图展示近半年用户满意度评分趋势，右侧条形图展示各类反馈问题的数量分布。通过识别用户痛点和满意度变化，辅助制定产品优化和服务改进策略。"
+              description={smartHomeFeedbackSummary(data)}
               pageNumber={4}
               totalPages={4}
             >

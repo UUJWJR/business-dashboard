@@ -12,8 +12,36 @@ interface SlideSectionProps {
   children: React.ReactNode;
 }
 
+interface SavedDesc {
+  text: string;
+  originalDesc: string;
+  isCustom: boolean;
+}
+
 function getStorageKey(pathname: string, id: string): string {
   return `slideDesc::${pathname}::${id}`;
+}
+
+function loadSaved(key: string): SavedDesc | null {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as SavedDesc;
+    if (typeof parsed.text === 'string' && typeof parsed.originalDesc === 'string') {
+      return parsed;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function saveDesc(key: string, saved: SavedDesc) {
+  try {
+    localStorage.setItem(key, JSON.stringify(saved));
+  } catch {
+    // ignore
+  }
 }
 
 export default function SlideSection({ id, title, description, pageNumber, totalPages, children }: SlideSectionProps) {
@@ -21,27 +49,32 @@ export default function SlideSection({ id, title, description, pageNumber, total
   const storageKey = getStorageKey(location.pathname, id);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [displayText, setDisplayText] = useState(() => {
-    try {
-      const saved = localStorage.getItem(storageKey);
-      return saved ?? description;
-    } catch {
-      return description;
+
+  const resolveDisplayText = useCallback((desc: string): string => {
+    const saved = loadSaved(storageKey);
+    if (!saved) return desc;
+    // If user customized the text, keep it unless the underlying description changed
+    if (saved.isCustom) {
+      // If the description prop is the same as when saved, respect the custom text
+      if (saved.originalDesc === desc) {
+        return saved.text;
+      }
+      // Description changed (data refreshed), discard custom text and use new auto-generated
+      return desc;
     }
-  });
+    // Not custom: always use latest auto-generated description
+    return desc;
+  }, [storageKey]);
+
+  const [displayText, setDisplayText] = useState(() => resolveDisplayText(description));
   const [draft, setDraft] = useState(displayText);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // When description prop changes (data refreshed / auto-generated updated), re-evaluate display text
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved !== null) {
-        setDisplayText(saved);
-      }
-    } catch {
-      // ignore
-    }
-  }, [storageKey]);
+    const next = resolveDisplayText(description);
+    setDisplayText(next);
+  }, [description, resolveDisplayText]);
 
   useEffect(() => {
     if (isEditing && textareaRef.current) {
@@ -58,13 +91,10 @@ export default function SlideSection({ id, title, description, pageNumber, total
   const handleConfirm = useCallback(() => {
     const trimmed = draft.trim();
     const finalText = trimmed || description;
+    const isCustom = finalText !== description;
     setDisplayText(finalText);
     setIsEditing(false);
-    try {
-      localStorage.setItem(storageKey, finalText);
-    } catch {
-      // ignore
-    }
+    saveDesc(storageKey, { text: finalText, originalDesc: description, isCustom });
   }, [draft, description, storageKey]);
 
   const handleCancel = useCallback(() => {
