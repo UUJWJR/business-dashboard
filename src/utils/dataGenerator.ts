@@ -299,7 +299,29 @@ export function generateSalesRevenueData(_timeRange: TimeRange): SalesRevenueDat
     },
   ];
 
-  return { kpis, monthlyTrend, composition, byRegion, byProduct, byChannel };
+  const byProductTrend = makeTrend(
+    ['1月', '2月', '3月', '4月', '5月', '6月'],
+    byProduct.map((p, i) => ({
+      name: p.name,
+      values: Array.from({ length: 6 }, (_, idx) =>
+        Math.round(p.value * (0.8 + idx * 0.05 + random(0, 0.1)) * 10) / 10
+      ),
+      color: ['#6366f1', '#22c55e', '#f59e0b', '#ef4444'][i % 4],
+    }))
+  );
+
+  const byChannelTrend = makeTrend(
+    ['1月', '2月', '3月', '4月', '5月', '6月'],
+    byChannel.map((c, i) => ({
+      name: c.name,
+      values: Array.from({ length: 6 }, (_, idx) =>
+        Math.round(c.value * (0.85 + idx * 0.04 + random(0, 0.1)) * 10) / 10
+      ),
+      color: ['#6366f1', '#22c55e', '#f59e0b', '#ef4444'][i % 4],
+    }))
+  );
+
+  return { kpis, monthlyTrend, composition, byRegion, byProduct, byChannel, byProductTrend, byChannelTrend };
 }
 
 export function generateCustomerAcquisitionData(_timeRange: TimeRange): CustomerAcquisitionData {
@@ -345,11 +367,54 @@ export function generateCustomerAcquisitionData(_timeRange: TimeRange): Customer
     { name: '直销', value: random(8, 14) },
   ]);
 
+  const typeTrend = makeTrend(
+    ['1月', '2月', '3月', '4月', '5月', '6月'],
+    typeDistribution.map((t, i) => ({
+      name: t.name,
+      values: Array.from({ length: 6 }, (_, idx) =>
+        Math.round(t.value * (0.9 + idx * 0.02 + random(0, 0.06)) * 10) / 10
+      ),
+      color: ['#6366f1', '#22c55e', '#f59e0b'][i % 3],
+    }))
+  );
+
+  const channelTrend = makeTrend(
+    ['1月', '2月', '3月', '4月', '5月', '6月'],
+    channelDistribution.map((c, i) => ({
+      name: c.name,
+      values: Array.from({ length: 6 }, (_, idx) =>
+        Math.round(c.value * (0.85 + idx * 0.03 + random(0, 0.08)) * 10) / 10
+      ),
+      color: ['#6366f1', '#22c55e', '#f59e0b', '#ef4444'][i % 4],
+    }))
+  );
+
   const churnRisk = [
     { level: '高风险', count: randomInt(800, 1500) },
     { level: '中风险', count: randomInt(2000, 4000) },
     { level: '低风险', count: randomInt(5000, 9000) },
   ];
+
+  const churnRiskTrend = makeTrend(
+    ['1月', '2月', '3月', '4月', '5月', '6月'],
+    [
+      {
+        name: '高风险',
+        values: Array.from({ length: 6 }, () => Math.round(random(600, 1400))),
+        color: '#ef4444',
+      },
+      {
+        name: '中风险',
+        values: Array.from({ length: 6 }, () => Math.round(random(2000, 3500))),
+        color: '#f59e0b',
+      },
+      {
+        name: '低风险',
+        values: Array.from({ length: 6 }, () => Math.round(random(5000, 8000))),
+        color: '#22c55e',
+      },
+    ]
+  );
 
   const totalCustomers = random(3.5, 5.2);
   const retentionRate = random(96, 99);
@@ -397,7 +462,7 @@ export function generateCustomerAcquisitionData(_timeRange: TimeRange): Customer
     },
   ];
 
-  return { kpis, dailyTrend, monthlyTrend, typeDistribution, channelDistribution, churnRisk };
+  return { kpis, dailyTrend, monthlyTrend, typeDistribution, channelDistribution, typeTrend, channelTrend, churnRisk, churnRiskTrend };
 }
 
 export function generateBroadbandData(_timeRange: TimeRange): BroadbandData {
@@ -478,7 +543,18 @@ export function generateBroadbandData(_timeRange: TimeRange): BroadbandData {
     },
   ];
 
-  return { kpis, monthlyTrend, speedDistribution, byRegion, competitorShare };
+  const speedTrend = makeTrend(
+    ['1月', '2月', '3月', '4月', '5月', '6月'],
+    speedDistribution.map((s, i) => ({
+      name: s.name,
+      values: Array.from({ length: 6 }, (_, idx) =>
+        Math.round(s.value * (0.85 + idx * 0.04 + random(0, 0.08)) * 10) / 10
+      ),
+      color: ['#6366f1', '#22c55e', '#f59e0b', '#ef4444'][i % 4],
+    }))
+  );
+
+  return { kpis, monthlyTrend, speedDistribution, speedTrend, byRegion, competitorShare };
 }
 
 export function generateSmartHomeData(_timeRange: TimeRange): SmartHomeData {
@@ -518,6 +594,25 @@ export function generateSmartHomeData(_timeRange: TimeRange): SmartHomeData {
     { name: 'AI音箱Mini', sales: randomInt(6000, 14000) },
     { name: '门窗传感器', sales: randomInt(4000, 10000) },
     { name: '智能插座', sales: randomInt(3000, 8000) },
+  ];
+
+  const satisfactionTrend = makeTrend(
+    ['1月', '2月', '3月', '4月', '5月', '6月'],
+    [
+      {
+        name: '满意度评分',
+        values: Array.from({ length: 6 }, () => Math.round((4.2 + random(0, 0.6)) * 10) / 10),
+        color: '#6366f1',
+      },
+    ]
+  );
+
+  const feedbackDistribution = [
+    { name: '产品质量', value: Math.round(random(300, 500)) },
+    { name: '安装服务', value: Math.round(random(200, 350)) },
+    { name: 'APP体验', value: Math.round(random(150, 250)) },
+    { name: '售后支持', value: Math.round(random(100, 180)) },
+    { name: '价格', value: Math.round(random(80, 140)) },
   ];
 
   const penetration = random(25, 45);
@@ -567,7 +662,7 @@ export function generateSmartHomeData(_timeRange: TimeRange): SmartHomeData {
     },
   ];
 
-  return { kpis, monthlyTrend, productDistribution, bindingRate, topProducts };
+  return { kpis, monthlyTrend, productDistribution, bindingRate, topProducts, satisfactionTrend, feedbackDistribution };
 }
 
 export function generateRightsProductsData(_timeRange: TimeRange): RightsProductsData {
@@ -608,6 +703,13 @@ export function generateRightsProductsData(_timeRange: TimeRange): RightsProduct
     { name: '出行', value: random(12, 18) },
     { name: '生活', value: random(14, 20) },
   ]);
+
+  const ageDistribution = [
+    { name: '年轻用户(18-25)', value: Math.round(random(25, 45)) },
+    { name: '中青年(26-35)', value: Math.round(random(30, 45)) },
+    { name: '中年(36-50)', value: Math.round(random(20, 30)) },
+    { name: '老年(50+)', value: Math.round(random(10, 15)) },
+  ];
 
   const usageRate = random(62, 80);
   const avgPrice = random(15, 30);
@@ -655,7 +757,7 @@ export function generateRightsProductsData(_timeRange: TimeRange): RightsProduct
     },
   ];
 
-  return { kpis, monthlyTrend, typeDistribution, topRights, revenueByType };
+  return { kpis, monthlyTrend, typeDistribution, topRights, revenueByType, ageDistribution };
 }
 
 export function generateHomeNetworkingData(_timeRange: TimeRange): HomeNetworkingData {
@@ -674,6 +776,17 @@ export function generateHomeNetworkingData(_timeRange: TimeRange): HomeNetworkin
     { name: 'PLC电力猫', value: random(5, 10) },
     { name: 'AP面板', value: random(5, 10) },
   ]);
+
+  const solutionTrend = makeTrend(
+    ['1月', '2月', '3月', '4月', '5月', '6月'],
+    solutionDistribution.map((s, i) => ({
+      name: s.name,
+      values: Array.from({ length: 6 }, (_, idx) =>
+        Math.round(s.value * (0.9 + idx * 0.02 + random(0, 0.06)) * 10) / 10
+      ),
+      color: ['#6366f1', '#22c55e', '#f59e0b', '#ef4444'][i % 4],
+    }))
+  );
 
   const byRegion: RegionData[] = [
     { name: '华东', value: Math.round(random(28, 38)), target: 34 },
@@ -736,7 +849,7 @@ export function generateHomeNetworkingData(_timeRange: TimeRange): HomeNetworkin
     },
   ];
 
-  return { kpis, monthlyTrend, solutionDistribution, byRegion, workorderStats };
+  return { kpis, monthlyTrend, solutionDistribution, solutionTrend, byRegion, workorderStats };
 }
 
 export function generateHomePreviewData(): HomePreviewData {

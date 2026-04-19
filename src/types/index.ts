@@ -50,6 +50,8 @@ export interface SalesRevenueData {
   byRegion: RegionData[];
   byProduct: DistributionData[];
   byChannel: DistributionData[];
+  byProductTrend: TrendChartData;
+  byChannelTrend: TrendChartData;
 }
 
 export interface CustomerAcquisitionData {
@@ -58,13 +60,17 @@ export interface CustomerAcquisitionData {
   monthlyTrend: TrendChartData;
   typeDistribution: DistributionData[];
   channelDistribution: DistributionData[];
+  typeTrend: TrendChartData;
+  channelTrend: TrendChartData;
   churnRisk: { level: string; count: number }[];
+  churnRiskTrend: TrendChartData;
 }
 
 export interface BroadbandData {
   kpis: KPIMetric[];
   monthlyTrend: TrendChartData;
   speedDistribution: DistributionData[];
+  speedTrend: TrendChartData;
   byRegion: RegionData[];
   competitorShare: DistributionData[];
 }
@@ -75,6 +81,8 @@ export interface SmartHomeData {
   productDistribution: DistributionData[];
   bindingRate: TrendChartData;
   topProducts: { name: string; sales: number }[];
+  satisfactionTrend: TrendChartData;
+  feedbackDistribution: DistributionData[];
 }
 
 export interface RightsProductsData {
@@ -83,12 +91,14 @@ export interface RightsProductsData {
   typeDistribution: DistributionData[];
   topRights: { name: string; activeUsers: number }[];
   revenueByType: DistributionData[];
+  ageDistribution: DistributionData[];
 }
 
 export interface HomeNetworkingData {
   kpis: KPIMetric[];
   monthlyTrend: TrendChartData;
   solutionDistribution: DistributionData[];
+  solutionTrend: TrendChartData;
   byRegion: RegionData[];
   workorderStats: { status: string; count: number }[];
 }
