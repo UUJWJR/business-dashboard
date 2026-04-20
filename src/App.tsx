@@ -9,6 +9,7 @@ import Broadband from './pages/Broadband';
 import SmartHome from './pages/SmartHome';
 import RightsProducts from './pages/RightsProducts';
 import HomeNetworking from './pages/HomeNetworking';
+import PageBuilder from './pages/PageBuilder';
 
 function App() {
   return (
@@ -77,6 +78,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <HomeNetworking />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/page-builder"
+            element={
+              <ProtectedRoute>
+                <PageBuilder />
               </ProtectedRoute>
             }
           />

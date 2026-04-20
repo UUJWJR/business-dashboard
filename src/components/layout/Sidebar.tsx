@@ -12,6 +12,7 @@ import {
   X,
   Smartphone,
   BarChart3,
+  Presentation,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -30,6 +31,7 @@ const menuItems: MenuItem[] = [
   { id: 'smart-home', label: '智家产品', icon: Smartphone, path: '/smart-home' },
   { id: 'rights-products', label: '权益产品', icon: Gift, path: '/rights-products' },
   { id: 'home-networking', label: '家庭组网', icon: Network, path: '/home-networking' },
+  { id: 'page-builder', label: '页面制作', icon: Presentation, path: '/page-builder' },
 ];
 
 interface SidebarProps {

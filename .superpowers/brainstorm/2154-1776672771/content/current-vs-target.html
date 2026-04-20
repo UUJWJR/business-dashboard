@@ -1,0 +1,115 @@
+<h2>当前 vs 目标：页面制作功能</h2>
+<p class="subtitle">左侧为当前实现，右侧为你期望的专业 PPT 编辑器</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">当前实现</div>
+    <div class="mockup-body" style="padding: 0; font-size: 11px;">
+      <div style="display: flex; height: 300px;">
+        <!-- Sidebar -->
+        <div style="width: 80px; background: #f8fafc; border-right: 1px solid #e2e8f0; padding: 8px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="text-align: center; font-size: 9px; color: #64748b; margin-bottom: 4px;">组件库</div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 4px; padding: 6px; text-align: center; font-size: 9px;">标题</div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 4px; padding: 6px; text-align: center; font-size: 9px;">文字</div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 4px; padding: 6px; text-align: center; font-size: 9px;">表格</div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 4px; padding: 6px; text-align: center; font-size: 9px;">图表</div>
+        </div>
+        <!-- Canvas -->
+        <div style="flex: 1; background: white; display: flex; align-items: center; justify-content: center; position: relative;">
+          <div style="width: 200px; height: 112px; background: white; border: 1px solid #e2e8f0; position: relative;">
+            <!-- Grid -->
+            <div style="position: absolute; inset: 0; background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px); background-size: 10px 10px;"></div>
+            <!-- Elements -->
+            <div style="position: absolute; left: 10px; top: 10px; width: 80px; height: 20px; border: 1px solid #6366f1; background: white; font-size: 8px; display: flex; align-items: center; padding-left: 4px;">请输入标题</div>
+            <div style="position: absolute; right: 10px; top: 30px; width: 60px; height: 40px; border: 1px dashed #6366f1;"></div>
+            <div style="position: absolute; left: 10px; bottom: 10px; width: 80px; height: 50px; border: 1px solid #e2e8f0; font-size: 7px;">
+              <div style="border-bottom: 1px solid #e2e8f0; padding: 2px;">列1 | 列2</div>
+              <div style="padding: 2px;">A | B</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 8px; font-size: 10px; color: #64748b;">
+        问题：组件面板简陋、无工具栏、图表无样式、表格无法编辑
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">期望目标（专业 PPT 编辑器）</div>
+    <div class="mockup-body" style="padding: 0; font-size: 11px;">
+      <div style="display: flex; height: 300px;">
+        <!-- Left: Slides + Components -->
+        <div style="width: 140px; background: #f1f5f9; border-right: 1px solid #cbd5e1; display: flex; flex-direction: column;">
+          <div style="padding: 6px; font-size: 9px; font-weight: bold; border-bottom: 1px solid #cbd5e1;">幻灯片</div>
+          <div style="padding: 8px; display: flex; flex-direction: column; gap: 6px;">
+            <div style="background: white; border: 2px solid #3b82f6; border-radius: 4px; height: 50px; padding: 4px; font-size: 7px;">Slide 1 ✓</div>
+            <div style="background: white; border: 1px solid #cbd5e1; border-radius: 4px; height: 50px; padding: 4px; font-size: 7px;">Slide 2</div>
+          </div>
+          <div style="padding: 6px; font-size: 9px; font-weight: bold; border-top: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1;">组件</div>
+          <div style="padding: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+            <div style="background: white; border: 1px solid #cbd5e1; border-radius: 3px; padding: 4px; text-align: center; font-size: 8px;">标题</div>
+            <div style="background: white; border: 1px solid #cbd5e1; border-radius: 3px; padding: 4px; text-align: center; font-size: 8px;">文本</div>
+            <div style="background: white; border: 1px solid #cbd5e1; border-radius: 3px; padding: 4px; text-align: center; font-size: 8px;">表格</div>
+            <div style="background: white; border: 1px solid #cbd5e1; border-radius: 3px; padding: 4px; text-align: center; font-size: 8px;">图表</div>
+            <div style="background: white; border: 1px solid #cbd5e1; border-radius: 3px; padding: 4px; text-align: center; font-size: 8px;">形状</div>
+            <div style="background: white; border: 1px solid #cbd5e1; border-radius: 3px; padding: 4px; text-align: center; font-size: 8px;">图片</div>
+          </div>
+        </div>
+        <!-- Canvas -->
+        <div style="flex: 1; background: #e2e8f0; display: flex; align-items: center; justify-content: center; position: relative;">
+          <div style="width: 220px; height: 124px; background: white; border: 1px solid #94a3b8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative;">
+            <!-- Dot grid -->
+            <div style="position: absolute; inset: 0; background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px); background-size: 12px 12px;"></div>
+            <!-- Styled elements -->
+            <div style="position: absolute; left: 15px; top: 15px; font-size: 11px; font-weight: bold; color: #1e293b;">季度销售报告</div>
+            <div style="position: absolute; right: 15px; top: 15px; width: 70px; height: 55px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">📊 图表</div>
+            <div style="position: absolute; left: 15px; bottom: 15px; width: 100px; height: 45px; border: 1px solid #cbd5e1; font-size: 7px; background: white;">
+              <div style="background: #f1f5f9; padding: 2px 4px; border-bottom: 1px solid #cbd5e1; font-weight: bold;">区域 | Q1 | Q2</div>
+              <div style="padding: 2px 4px;">华北 | 120 | 150</div>
+            </div>
+          </div>
+        </div>
+        <!-- Right: Properties -->
+        <div style="width: 100px; background: #f8fafc; border-left: 1px solid #cbd5e1; padding: 6px; font-size: 9px;">
+          <div style="font-weight: bold; margin-bottom: 6px;">属性</div>
+          <div style="margin-bottom: 4px;">字号: 18px ▼</div>
+          <div style="margin-bottom: 4px;">颜色: 🔵 ▼</div>
+          <div style="margin-bottom: 4px;">对齐: ⬅️ ▼</div>
+          <div style="margin-top: 10px; font-weight: bold;">图表数据</div>
+          <div style="margin-bottom: 4px;">类型: 柱状图 ▼</div>
+          <div style="margin-bottom: 4px;">主题: 麦肯锡 ▼</div>
+        </div>
+      </div>
+      <div style="padding: 8px; font-size: 10px; color: #059669;">
+        目标：幻灯片管理、丰富属性面板、专业图表样式、可编辑表格、多网格模式
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>主要差距总结</h3>
+  <div class="pros-cons">
+    <div class="cons">
+      <h4>当前不足</h4>
+      <ul>
+        <li>只有单页，无幻灯片分页管理</li>
+        <li>无右侧属性面板，无法调整字体/颜色</li>
+        <li>图表仅复用现有组件，无专业主题</li>
+        <li>表格静态展示，不可编辑</li>
+        <li>无"保存/提交"概念，仅 localStorage</li>
+      </ul>
+    </div>
+    <div class="pros">
+      <h4>目标能力</h4>
+      <ul>
+        <li>多幻灯片分页（类似 PPT 左侧缩略图）</li>
+        <li>右侧属性面板（字体、颜色、对齐、图表类型等）</li>
+        <li>专业图表主题（麦肯锡风格、国标风格）</li>
+        <li>表格编辑（增删行列、合并单元格）</li>
+        <li>保存=可修改的草稿，提交=交付锁定</li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<h2>实现方案对比</h2>
+<p class="subtitle">三种不同的重构策略，各有优劣</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>渐进式升级（推荐）</h3>
+      <p>保留现有 Canvas + react-rnd 骨架，在其上扩展能力</p>
+      <div class="pros-cons" style="margin-top: 8px; font-size: 10px;">
+        <div class="pros">
+          <ul style="margin: 0; padding-left: 14px;">
+            <li>复用现有拖拽/画布代码</li>
+            <li>风险低，可渐进交付</li>
+            <li>与现有项目风格一致</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <ul style="margin: 0; padding-left: 14px;">
+            <li>某些需求可能需要 workaround</li>
+            <li>架构不是最理想的</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>完全重写</h3>
+      <p>废弃当前实现，重新设计完整的 PPT 编辑器架构</p>
+      <div class="pros-cons" style="margin-top: 8px; font-size: 10px;">
+        <div class="pros">
+          <ul style="margin: 0; padding-left: 14px;">
+            <li>架构清晰，扩展性最好</li>
+            <li>无历史包袱</li>
+            <li>可设计更合理的组件系统</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <ul style="margin: 0; padding-left: 14px;">
+            <li>工作量大，工期长</li>
+            <li>需要废弃现有代码</li>
+            <li>可能引入新bug</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>引入外部库</h3>
+      <p>使用 Fabric.js 或专业 PPT 编辑器库</p>
+      <div class="pros-cons" style="margin-top: 8px; font-size: 10px;">
+        <div class="pros">
+          <ul style="margin: 0; padding-left: 14px;">
+            <li>功能成熟，开箱即用</li>
+            <li>节省开发时间</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <ul style="margin: 0; padding-left: 14px;">
+            <li>与现有技术栈不匹配（React+Vite+Tailwind）</li>
+            <li>定制困难，暗色模式适配复杂</li>
+            <li>学习成本高，包体积大</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px; background: #eff6ff; padding: 12px; border-radius: 6px;">
+  <p style="font-size: 11px; color: #1e40af; margin: 0;">💡 我的推荐：方案 A（渐进式升级）。理由：当前实现已有良好的基础（react-rnd 拖拽、@dnd-kit 放置、百分比坐标系统），在此基础上扩展右侧属性面板、幻灯片管理、升级组件能力，可以以较低风险完成重构，且保持与项目现有风格一致。</p>
+</div>
