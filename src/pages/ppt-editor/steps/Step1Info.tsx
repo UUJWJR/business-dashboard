@@ -10,11 +10,17 @@ interface Props {
   onSubmit: (data: { name: string; department: string; date: string; author: string }) => void;
 }
 
+const DEFAULTS = {
+  name: '写复盘会',
+  department: '市场部',
+  author: '小项',
+};
+
 export default function Step1Info({ initialData, onSubmit }: Props) {
-  const [name, setName] = useState(initialData?.name || '');
-  const [department, setDepartment] = useState(initialData?.department || '');
+  const [name, setName] = useState(initialData?.name || DEFAULTS.name);
+  const [department, setDepartment] = useState(initialData?.department || DEFAULTS.department);
   const [date, setDate] = useState(initialData?.date || new Date().toISOString().slice(0, 10));
-  const [author, setAuthor] = useState(initialData?.author || '');
+  const [author, setAuthor] = useState(initialData?.author || DEFAULTS.author);
 
   const isValid = name.trim() && department.trim() && date && author.trim();
 
