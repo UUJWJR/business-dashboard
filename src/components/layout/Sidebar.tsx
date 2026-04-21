@@ -3,11 +3,16 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
   TrendingUp,
+  Users,
+  Wifi,
+  Gift,
+  Network,
   ChevronLeft,
   ChevronRight,
   X,
+  Smartphone,
   BarChart3,
-  Presentation,
+  CalendarCheck,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -21,7 +26,12 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   { id: 'home', label: '首页', icon: Home, path: '/home' },
   { id: 'sales-revenue', label: '销售收入', icon: TrendingUp, path: '/sales-revenue' },
-  { id: 'page-builder', label: '页面制作', icon: Presentation, path: '/page-builder' },
+  { id: 'customer-acquisition', label: '客户新增', icon: Users, path: '/customer-acquisition' },
+  { id: 'broadband', label: '宽带新增', icon: Wifi, path: '/broadband' },
+  { id: 'smart-home', label: '智家产品', icon: Smartphone, path: '/smart-home' },
+  { id: 'rights-products', label: '权益产品', icon: Gift, path: '/rights-products' },
+  { id: 'home-networking', label: '家庭组网', icon: Network, path: '/home-networking' },
+  { id: 'week-review', label: '周四复盘', icon: CalendarCheck, path: '/week-review' },
 ];
 
 interface SidebarProps {
@@ -146,7 +156,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
                     <BarChart3 className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                    EasyWork工作台
+                    菜单
                   </span>
                 </div>
                 <button

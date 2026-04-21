@@ -24,12 +24,12 @@ export default function SimpleBarChart({
 }: Props) {
   const chartRef = useRef<ReactECharts>(null);
 
-  const colors = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6'];
+  const chartColors = ['#0070C0', '#FA8C16', '#1AAB55', '#722ED1', '#13C2C2', '#EB2F96', '#A0522D', '#595959'];
 
   const option = useMemo(() => {
-    const textColor = isDark ? '#9ca3af' : '#4b5563';
-    const axisColor = isDark ? '#374151' : '#e5e7eb';
-    const gridColor = isDark ? '#374151' : '#f3f4f6';
+    const textColor = isDark ? '#9ca3af' : '#595959';
+    const axisColor = isDark ? '#374151' : '#D9D9D9';
+    const gridColor = isDark ? '#374151' : '#F5F6F8';
 
     let labels: string[] = [];
     let datasets: { name: string; values: number[]; color?: string }[] = [];
@@ -38,7 +38,7 @@ export default function SimpleBarChart({
     if (Array.isArray(data) && 'target' in (data[0] || {})) {
       const regionData = data as RegionData[];
       labels = regionData.map((d) => d.name);
-      datasets = [{ name: '实际值', values: regionData.map((d) => d.value), color: colors[0] }];
+      datasets = [{ name: '实际值', values: regionData.map((d) => d.value), color: chartColors[0] }];
       if (showTarget) {
         targetValues = regionData.map((d) => d.target);
       }
@@ -54,9 +54,9 @@ export default function SimpleBarChart({
       barWidth: showTarget ? '30%' : '40%',
       itemStyle: {
         borderRadius: [4, 4, 0, 0] as [number, number, number, number],
-        color: ds.color || colors[i % colors.length],
+        color: ds.color || chartColors[i % chartColors.length],
       },
-      emphasis: { itemStyle: { color: ds.color || colors[i % colors.length] } },
+      emphasis: { itemStyle: { color: ds.color || chartColors[i % chartColors.length] } },
       data: ds.values,
     }));
 
@@ -66,8 +66,8 @@ export default function SimpleBarChart({
           type: 'line' as const,
           symbol: 'circle' as const,
           symbolSize: 6,
-          lineStyle: { width: 2, type: 'dashed' as const, color: '#f59e0b' },
-          itemStyle: { color: '#f59e0b' },
+          lineStyle: { width: 2, type: 'dashed' as const, color: '#8C8C8C' },
+          itemStyle: { color: '#8C8C8C' },
           data: targetValues,
         }]
       : [];
@@ -76,34 +76,35 @@ export default function SimpleBarChart({
       tooltip: {
         trigger: 'axis',
         backgroundColor: isDark ? '#1f2937' : '#ffffff',
-        borderColor: isDark ? '#374151' : '#e5e7eb',
-        textStyle: { color: isDark ? '#e5e7eb' : '#1f2937' },
+        borderColor: isDark ? '#374151' : '#D9D9D9',
+        textStyle: { color: isDark ? '#e5e7eb' : '#1A1A1A' },
         axisPointer: { type: 'shadow' },
       },
       legend: {
         data: [...series, ...targetSeries].map((s) => s.name),
-        textStyle: { color: textColor },
-        bottom: 0,
+        textStyle: { color: textColor, fontSize: 12 },
+        top: 0,
       },
       grid: {
         left: '3%',
         right: '4%',
-        bottom: '15%',
-        top: '10%',
+        bottom: '8%',
+        top: '12%',
         containLabel: true,
       },
       xAxis: {
         type: 'category',
         data: labels,
         axisLine: { lineStyle: { color: axisColor } },
-        axisLabel: { color: textColor },
+        axisLabel: { color: textColor, fontSize: 11 },
       },
       yAxis: {
         type: 'value',
         axisLine: { show: false },
-        splitLine: { lineStyle: { color: gridColor, type: 'dashed' } },
+        splitLine: { lineStyle: { color: gridColor, type: 'solid' } },
         axisLabel: {
           color: textColor,
+          fontSize: 11,
           formatter: yAxisFormatter,
         },
       },

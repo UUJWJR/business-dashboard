@@ -2,15 +2,33 @@ import { useState, useEffect, useCallback } from 'react';
 import type { TimeRange } from '../types';
 import {
   generateSalesRevenueData,
+  generateCustomerAcquisitionData,
+  generateBroadbandData,
+  generateSmartHomeData,
+  generateRightsProductsData,
+  generateHomeNetworkingData,
   generateHomePreviewData,
+  generateWeekReviewData,
 } from '../utils/dataGenerator';
 
 export type ModuleKey =
   | 'sales-revenue'
+  | 'customer-acquisition'
+  | 'broadband'
+  | 'smart-home'
+  | 'rights-products'
+  | 'home-networking'
+  | 'week-review'
   | 'home-preview';
 
 const generators = {
   'sales-revenue': generateSalesRevenueData,
+  'customer-acquisition': generateCustomerAcquisitionData,
+  broadband: generateBroadbandData,
+  'smart-home': generateSmartHomeData,
+  'rights-products': generateRightsProductsData,
+  'home-networking': generateHomeNetworkingData,
+  'week-review': generateWeekReviewData,
 } as const;
 
 export function useModuleData<T>(moduleKey: ModuleKey, timeRange: TimeRange) {

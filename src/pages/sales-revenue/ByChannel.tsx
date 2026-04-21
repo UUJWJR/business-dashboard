@@ -15,7 +15,7 @@ export default function SalesRevenueByChannel({ data, isDark, onRefresh }: Props
         title="渠道收入分布"
         data={{
           labels: data.byChannel.map((c) => c.name),
-          datasets: [{ name: '收入占比', values: data.byChannel.map((c) => c.value), color: '#6366f1' }],
+          datasets: [{ name: '收入占比', values: data.byChannel.map((c) => c.value), color: '#0070C0' }],
         }}
         isDark={isDark}
         onRefresh={onRefresh}

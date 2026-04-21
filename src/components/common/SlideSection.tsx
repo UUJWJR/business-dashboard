@@ -128,33 +128,34 @@ export default function SlideSection({ id, title, description, pageNumber, total
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="w-full h-full max-w-[1400px] bg-white dark:bg-surface-900 rounded-card border border-gray-100/80 dark:border-white/[0.06] shadow-card dark:shadow-card-dark flex flex-col overflow-hidden relative p-5 md:p-6"
       >
-        <div className="flex-none pt-4 pb-2 border-b border-gray-100 dark:border-white/[0.06]">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
+        <div className="flex-none pt-4 pb-2 border-b border-neutral-border/60 dark:border-white/[0.06] flex items-center gap-3">
+          <div className="w-1 h-7 md:h-8 bg-theme rounded-sm flex-shrink-0" />
+          <h2 className="text-xl md:text-2xl font-bold text-theme-dark dark:text-white tracking-tight">
             {title}
           </h2>
         </div>
 
         {isEditing ? (
-          <div className="flex-none py-3 px-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/40 rounded-lg max-h-40 overflow-y-auto">
+          <div className="flex-none py-2.5 px-3 bg-theme-light/60 dark:bg-theme-light/10 border border-theme-light dark:border-theme/30 rounded-md max-h-40 overflow-y-auto">
             <textarea
               ref={textareaRef}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={handleKeyDown}
               rows={3}
-              className="w-full resize-none bg-transparent text-base md:text-lg text-yellow-900 dark:text-yellow-100 leading-relaxed outline-none placeholder:text-yellow-400/60"
+              className="w-full resize-none bg-transparent text-sm md:text-base text-neutral-text dark:text-neutral-text leading-relaxed outline-none placeholder:text-neutral-muted/60"
             />
             <div className="flex items-center justify-end gap-2 mt-2">
               <button
                 onClick={handleConfirm}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-yellow-600 text-white text-sm hover:bg-yellow-700 transition-colors"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-theme text-white text-sm hover:bg-theme-dark transition-colors"
               >
                 <Check className="w-3.5 h-3.5" />
                 确认
               </button>
               <button
                 onClick={handleCancel}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-neutral-bg dark:bg-neutral-bg/20 text-neutral-secondary dark:text-neutral-secondary text-sm hover:bg-neutral-border/60 dark:hover:bg-neutral-border/40 transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
                 取消
@@ -164,13 +165,13 @@ export default function SlideSection({ id, title, description, pageNumber, total
         ) : (
           <div
             onDoubleClick={handleDoubleClick}
-            className="flex-none py-3 px-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-800/30 rounded-lg group cursor-text relative max-h-32 overflow-y-auto"
+            className="flex-none py-2.5 px-3 bg-theme-light/40 dark:bg-theme-light/10 border-l-4 border-theme rounded-r-md group cursor-text relative max-h-32 overflow-y-auto"
             title="双击编辑"
           >
-            <p className="text-base md:text-lg text-yellow-800 dark:text-yellow-200 leading-relaxed">
+            <p className="text-sm md:text-base text-neutral-text dark:text-neutral-text leading-relaxed">
               {displayText}
             </p>
-            <span className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-yellow-600 dark:text-yellow-300">
+            <span className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-theme dark:text-theme-light">
               <Pencil className="w-4 h-4" />
             </span>
           </div>
@@ -181,8 +182,8 @@ export default function SlideSection({ id, title, description, pageNumber, total
         </div>
 
         {pageNumber !== undefined && totalPages !== undefined && (
-          <div className="absolute bottom-3 right-4 text-xs md:text-sm text-gray-400 dark:text-gray-500 font-medium">
-            {pageNumber} / {totalPages}
+          <div className="absolute bottom-3 right-4 text-xs text-neutral-muted dark:text-neutral-muted font-medium">
+            第 {pageNumber} 页 / 共 {totalPages} 页
           </div>
         )}
       </motion.div>

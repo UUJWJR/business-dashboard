@@ -1,146 +1,134 @@
 import { useMemo, useRef } from 'react';
 import ReactECharts from 'echarts-for-react';
-import type { WaterfallDataItem } from '../../types/pageBuilder';
-import type { ChartTheme } from '../../utils/chartThemes';
 import ChartCard from './ChartCard';
+
+interface WaterfallItem {
+  name: string;
+  value: number;
+  type: 'positive' | 'negative' | 'total';
+}
 
 interface Props {
   title: string;
-  data: WaterfallDataItem[];
-  theme: ChartTheme;
+  data: WaterfallItem[];
+  isDark: boolean;
   onRefresh: () => void;
   className?: string;
 }
 
-const POSITIVE_COLOR = '#22c55e';
-const NEGATIVE_COLOR = '#ef4444';
-const TOTAL_COLOR = '#3b82f6';
+const COLORS = {
+  positive: '#1AAB55',
+  negative: '#CF1322',
+  total: '#00467F',
+};
 
 export default function WaterfallChart({
   title,
   data,
-  theme,
+  isDark,
   onRefresh,
   className = '',
 }: Props) {
   const chartRef = useRef<ReactECharts>(null);
 
-  const { categories, positive, negative, helper } = useMemo(() => {
-    const cats: string[] = [];
-    const pos: (number | string)[] = [];
-    const neg: (number | string)[] = [];
-    const help: (number | string)[] = [];
+  const option = useMemo(() => {
+    const textColor = isDark ? '#9ca3af' : '#595959';
+    const axisColor = isDark ? '#374151' : '#D9D9D9';
+    const gridColor = isDark ? '#374151' : '#F5F6F8';
 
     let cumulative = 0;
+    const placeholders: number[] = [];
+    const values: number[] = [];
+    const colors: string[] = [];
+    const labels: string[] = [];
 
-    data.forEach((item, index) => {
-      cats.push(item.name);
-      if (item.isTotal) {
-        help.push(0);
-        pos.push(cumulative);
-        neg.push('-');
+    data.forEach((item) => {
+      labels.push(item.name);
+      if (item.type === 'total') {
+        placeholders.push(0);
+        values.push(item.value);
         cumulative = item.value;
+      } else if (item.type === 'positive') {
+        placeholders.push(cumulative);
+        values.push(item.value);
+        cumulative += item.value;
       } else {
-        if (item.value >= 0) {
-          help.push(cumulative);
-          pos.push(item.value);
-          neg.push('-');
-          cumulative += item.value;
-        } else {
-          help.push(cumulative + item.value);
-          neg.push(Math.abs(item.value));
-          pos.push('-');
-          cumulative += item.value;
-        }
+        cumulative += item.value;
+        placeholders.push(cumulative);
+        values.push(Math.abs(item.value));
       }
+      colors.push(COLORS[item.type]);
     });
 
-    return { categories: cats, positive: pos, negative: neg, helper: help };
-  }, [data]);
-
-  const option = useMemo(() => {
-    const barRadius = theme.barRadius ?? 4;
     return {
-      backgroundColor: theme.backgroundColor || 'transparent',
       tooltip: {
         trigger: 'axis',
+        backgroundColor: isDark ? '#1f2937' : '#ffffff',
+        borderColor: isDark ? '#374151' : '#D9D9D9',
+        textStyle: { color: isDark ? '#e5e7eb' : '#1A1A1A' },
         axisPointer: { type: 'shadow' },
-        backgroundColor: theme.backgroundColor === '#0f172a' ? '#1e293b' : '#ffffff',
-        borderColor: theme.axisColor,
-        textStyle: { color: theme.textColor },
         formatter: (params: any[]) => {
-          const name = params[0]?.axisValue || '';
-          const val = data.find((d) => d.name === name);
-          if (!val) return name;
-          const color = val.isTotal ? TOTAL_COLOR : val.value >= 0 ? POSITIVE_COLOR : NEGATIVE_COLOR;
-          return `${name}<br/><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>${val.value}`;
+          const idx = params[0]?.dataIndex ?? 0;
+          const item = data[idx];
+          const val = item.value;
+          const sign = item.type === 'negative' ? '' : val >= 0 ? '+' : '';
+          return `${item.name}<br/>数值: ${sign}${val}`;
         },
       },
       grid: {
         left: '3%',
         right: '4%',
-        bottom: '15%',
-        top: '10%',
+        bottom: '10%',
+        top: '12%',
         containLabel: true,
       },
       xAxis: {
         type: 'category',
-        data: categories,
-        axisLine: { lineStyle: { color: theme.axisColor } },
-        axisLabel: { color: theme.textColor, fontFamily: theme.fontFamily },
+        data: labels,
+        axisLine: { lineStyle: { color: axisColor } },
+        axisLabel: { color: textColor, fontSize: 11 },
       },
       yAxis: {
         type: 'value',
         axisLine: { show: false },
-        splitLine: { lineStyle: { color: theme.gridColor, type: 'dashed' } },
-        axisLabel: { color: theme.textColor, fontFamily: theme.fontFamily },
+        splitLine: { lineStyle: { color: gridColor, type: 'solid' } },
+        axisLabel: { color: textColor, fontSize: 11 },
       },
       series: [
         {
-          name: '辅助',
+          name: 'placeholder',
           type: 'bar',
           stack: 'total',
-          itemStyle: {
-            color: 'transparent',
-          },
-          emphasis: {
-            itemStyle: { color: 'transparent' },
-          },
-          data: helper,
+          itemStyle: { borderColor: 'transparent', color: 'transparent' },
+          emphasis: { itemStyle: { borderColor: 'transparent', color: 'transparent' } },
+          data: placeholders,
         },
         {
-          name: '增加',
+          name: '数值',
           type: 'bar',
           stack: 'total',
-          itemStyle: {
-            color: POSITIVE_COLOR,
-            borderRadius: [barRadius, barRadius, 0, 0] as [number, number, number, number],
+          barWidth: '50%',
+          label: {
+            show: true,
+            position: 'top',
+            color: textColor,
+            fontSize: 11,
+            formatter: (p: any) => {
+              const item = data[p.dataIndex];
+              const val = item.value;
+              if (item.type === 'total') return `${val}`;
+              return val >= 0 ? `+${val}` : `${val}`;
+            },
           },
-          data: positive,
-        },
-        {
-          name: '减少',
-          type: 'bar',
-          stack: 'total',
           itemStyle: {
-            color: NEGATIVE_COLOR,
-            borderRadius: [barRadius, barRadius, 0, 0] as [number, number, number, number],
+            color: (p: any) => colors[p.dataIndex],
+            borderRadius: [4, 4, 0, 0],
           },
-          data: negative,
-        },
-        {
-          name: '总计',
-          type: 'bar',
-          stack: 'total',
-          itemStyle: {
-            color: TOTAL_COLOR,
-            borderRadius: [barRadius, barRadius, 0, 0] as [number, number, number, number],
-          },
-          data: data.map((item) => (item.isTotal ? item.value : '-')),
+          data: values,
         },
       ],
     };
-  }, [categories, positive, negative, helper, data, theme]);
+  }, [data, isDark]);
 
   return (
     <ChartCard title={title} onRefresh={onRefresh} chartRef={chartRef} className={className}>

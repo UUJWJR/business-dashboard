@@ -12,7 +12,7 @@ interface Props {
   donut?: boolean;
 }
 
-const COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6'];
+const CHART_COLORS = ['#0070C0', '#FA8C16', '#1AAB55', '#722ED1', '#13C2C2', '#EB2F96', '#A0522D', '#595959'];
 
 export default function SimplePieChart({
   title,
@@ -27,14 +27,14 @@ export default function SimplePieChart({
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
   const option = useMemo(() => {
-    const textColor = isDark ? '#9ca3af' : '#4b5563';
+    const textColor = isDark ? '#9ca3af' : '#595959';
 
     return {
       tooltip: {
         trigger: 'item',
         backgroundColor: isDark ? '#1f2937' : '#ffffff',
-        borderColor: isDark ? '#374151' : '#e5e7eb',
-        textStyle: { color: isDark ? '#e5e7eb' : '#1f2937' },
+        borderColor: isDark ? '#374151' : '#D9D9D9',
+        textStyle: { color: isDark ? '#e5e7eb' : '#1A1A1A' },
         formatter: '{b}<br/>占比: {d}%<br/>数值: {c}',
       },
       legend: {
@@ -83,7 +83,7 @@ export default function SimplePieChart({
           },
           data: data.map((item, i) => ({
             ...item,
-            itemStyle: { color: COLORS[i % COLORS.length] },
+            itemStyle: { color: CHART_COLORS[i % CHART_COLORS.length] },
           })),
         },
       ],
@@ -107,7 +107,7 @@ export default function SimplePieChart({
               style: {
                 text: `${total.toFixed(1)}`,
                 textAlign: 'center',
-                fill: isDark ? '#e5e7eb' : '#1f2937',
+                fill: isDark ? '#e5e7eb' : '#00467F',
                 fontSize: 18,
                 fontWeight: 'bold',
               },

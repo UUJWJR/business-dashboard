@@ -8,6 +8,40 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Enterprise Design System Colors (ppt-design-system.md)
+        theme: {
+          dark: '#00467F',
+          DEFAULT: '#0070C0',
+          light: '#D6E7F5',
+          aux: '#418FDE',
+        },
+        neutral: {
+          text: '#1A1A1A',
+          secondary: '#595959',
+          muted: '#8C8C8C',
+          border: '#D9D9D9',
+          bg: '#F5F6F8',
+        },
+        semantic: {
+          green: '#0B6E31',
+          'green-light': '#1AAB55',
+          'green-bg': '#B7EB8F',
+          red: '#820014',
+          'red-light': '#CF1322',
+          'red-bg': '#FFCCC7',
+          orange: '#FA8C16',
+        },
+        chart: {
+          1: '#0070C0',
+          2: '#FA8C16',
+          3: '#1AAB55',
+          4: '#722ED1',
+          5: '#13C2C2',
+          6: '#EB2F96',
+          7: '#A0522D',
+          8: '#595959',
+        },
+        // Legacy aliases for backward compatibility
         primary: {
           50: '#f0f5ff',
           100: '#e0eaff',

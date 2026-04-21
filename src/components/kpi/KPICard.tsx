@@ -48,12 +48,12 @@ const iconMap: Record<string, React.ElementType> = {
   Home,
 };
 
-const colorMap: Record<string, { bg: string; text: string }> = {
-  primary: { bg: 'bg-primary-50 dark:bg-primary-900/20', text: 'text-primary-600 dark:text-primary-400' },
-  success: { bg: 'bg-success-50 dark:bg-green-900/20', text: 'text-success-600 dark:text-green-400' },
-  warning: { bg: 'bg-warning-50 dark:bg-yellow-900/20', text: 'text-warning-600 dark:text-yellow-400' },
-  danger: { bg: 'bg-danger-50 dark:bg-red-900/20', text: 'text-danger-600 dark:text-red-400' },
-  info: { bg: 'bg-info-50 dark:bg-blue-900/20', text: 'text-info-600 dark:text-blue-400' },
+const colorMap: Record<string, { bg: string; text: string; border: string }> = {
+  primary: { bg: 'bg-white dark:bg-surface-900', text: 'text-theme-dark dark:text-theme-light', border: 'border-neutral-border dark:border-white/[0.08]' },
+  success: { bg: 'bg-white dark:bg-surface-900', text: 'text-semantic-green-light dark:text-semantic-green-bg', border: 'border-neutral-border dark:border-white/[0.08]' },
+  warning: { bg: 'bg-white dark:bg-surface-900', text: 'text-semantic-orange dark:text-semantic-orange/80', border: 'border-neutral-border dark:border-white/[0.08]' },
+  danger: { bg: 'bg-white dark:bg-surface-900', text: 'text-semantic-red-light dark:text-semantic-red-bg', border: 'border-neutral-border dark:border-white/[0.08]' },
+  info: { bg: 'bg-white dark:bg-surface-900', text: 'text-theme dark:text-theme-light', border: 'border-neutral-border dark:border-white/[0.08]' },
 };
 
 interface KPICardProps {
@@ -92,40 +92,32 @@ export default function KPICard({ data, index }: KPICardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.4 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="bg-white dark:bg-surface-900 rounded-card p-3 border border-gray-100/80 dark:border-white/[0.06] shadow-card hover:shadow-card-hover dark:shadow-card-dark dark:hover:shadow-card-dark-hover transition-all cursor-pointer hover:-translate-y-0.5"
+      className={`${colors.bg} rounded-[5px] p-3 border ${colors.border} shadow-sm hover:shadow-md transition-all cursor-pointer hover:-translate-y-0.5`}
     >
       <div className="flex items-start justify-between mb-2">
-        <div className={`p-1.5 rounded-lg ${colors.bg}`}>
-          <Icon className={`w-4 h-4 ${colors.text}`} />
+        <div className="p-1.5 rounded-md bg-theme-light/40 dark:bg-theme-light/10">
+          <Icon className="w-4 h-4 text-theme dark:text-theme-light" />
         </div>
         <div className="flex flex-col items-end gap-1">
           <div
-            className={`flex items-center gap-1 text-sm font-medium ${
+            className={`flex items-center gap-1 text-xs font-medium ${
               isPositive
-                ? 'text-success-600 dark:text-success-400'
-                : 'text-danger-600 dark:text-danger-400'
+                ? 'text-semantic-green-light dark:text-semantic-green-bg'
+                : 'text-semantic-red-light dark:text-semantic-red-bg'
             }`}
           >
-            {isPositive ? (
-              <ArrowUpRight className="w-4 h-4" />
-            ) : (
-              <ArrowDownRight className="w-4 h-4" />
-            )}
+            <span>{isPositive ? '▲' : '▼'}</span>
             <span>环比 {Math.abs(data.trend).toFixed(2)}%</span>
           </div>
           {'yoyTrend' in data && typeof data.yoyTrend === 'number' && (
             <div
-              className={`flex items-center gap-1 text-xs font-medium ${
+              className={`flex items-center gap-1 text-[10px] font-medium ${
                 data.yoyTrend >= 0
-                  ? 'text-success-600 dark:text-success-400'
-                  : 'text-danger-600 dark:text-danger-400'
+                  ? 'text-semantic-green-light dark:text-semantic-green-bg'
+                  : 'text-semantic-red-light dark:text-semantic-red-bg'
               }`}
             >
-              {data.yoyTrend >= 0 ? (
-                <ArrowUpRight className="w-3 h-3" />
-              ) : (
-                <ArrowDownRight className="w-3 h-3" />
-              )}
+              <span>{data.yoyTrend >= 0 ? '▲' : '▼'}</span>
               <span>同比 {Math.abs(data.yoyTrend).toFixed(2)}%</span>
             </div>
           )}
@@ -133,10 +125,10 @@ export default function KPICard({ data, index }: KPICardProps) {
       </div>
 
       <div className="space-y-0.5">
-        <p className="text-xs text-gray-500 dark:text-gray-400">{data.title}</p>
-        <p className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
+        <p className="text-xs text-neutral-secondary dark:text-neutral-muted">{data.title}</p>
+        <p className="text-lg md:text-2xl font-bold text-theme-dark dark:text-white">
           {formattedValue}
-          <span className="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1">
+          <span className="text-xs font-normal text-neutral-muted dark:text-neutral-muted ml-1">
             {data.unit}
           </span>
         </p>
