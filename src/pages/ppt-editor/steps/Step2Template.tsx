@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import type { PptSlideData, PptTemplate } from '../../../types/ppt';
+import { ChevronDown, ChevronUp, Upload } from 'lucide-react';
+import type { PptSlideData } from '../../../types/ppt';
 import { PPT_TEMPLATES } from '../../../utils/pptTemplates';
 import { generateWeekReviewData } from '../../../utils/dataGenerator';
 import {
@@ -11,6 +11,8 @@ import {
   weekReviewOtherSummary,
   weekReviewSummarySummary,
 } from '../../../utils/slideSummary';
+import ExcelImporter from '../components/ExcelImporter';
+import type { ParsedSheet } from '../../../utils/excelParser';
 
 interface Props {
   initialSlides?: PptSlideData[];
@@ -52,6 +54,7 @@ export default function Step2Template({ initialSlides, initialTemplateId, onSubm
   const [slides, setSlides] = useState<PptSlideData[]>(initialSlides || generateSlides(DATA_SOURCES[0].id));
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [showImporter, setShowImporter] = useState(false);
 
   const selectedTemplate = PPT_TEMPLATES.find((t) => t.id === selectedTemplateId)!;
 
@@ -92,6 +95,29 @@ export default function Step2Template({ initialSlides, initialTemplateId, onSubm
   const handleSubmit = () => {
     if (hasErrors) return;
     onSubmit(slides, selectedTemplateId);
+  };
+
+  const applyExcelMappings = (
+    mappings: { sheetIndex: number; slideIndex: number }[],
+    sheets: ParsedSheet[]
+  ) => {
+    setSlides((prev) => {
+      const next = [...prev];
+      mappings.forEach((mapping) => {
+        const sheet = sheets[mapping.sheetIndex];
+        if (!sheet || mapping.slideIndex >= next.length) return;
+        next[mapping.slideIndex] = {
+          ...next[mapping.slideIndex],
+          content: {
+            type: 'table',
+            columns: sheet.columns,
+            rows: sheet.rows,
+          },
+        };
+      });
+      return next;
+    });
+    setShowImporter(false);
   };
 
   return (
@@ -178,9 +204,27 @@ export default function Step2Template({ initialSlides, initialTemplateId, onSubm
 
       {/* Right: Slide list */}
       <div className="flex-1 space-y-3">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          页面配置（共 {slides.length} 页）
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            页面配置（共 {slides.length} 页）
+          </h3>
+          <button
+            onClick={() => setShowImporter((v) => !v)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+          >
+            <Upload className="w-4 h-4" />
+            {showImporter ? '取消导入' : '导入 Excel'}
+          </button>
+        </div>
+
+        {showImporter && (
+          <ExcelImporter
+            slideCount={slides.length}
+            slideTitles={slides.map((s) => s.title)}
+            onApply={applyExcelMappings}
+            onCancel={() => setShowImporter(false)}
+          />
+        )}
 
         {slides.map((slide, index) => {
           const isExpanded = expandedIndex === index;

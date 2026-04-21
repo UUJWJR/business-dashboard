@@ -1,9 +1,7 @@
 import { useRef } from 'react';
-import { useTheme } from '../../../hooks/useTheme';
 import { ExportButton } from '../../../components/common/ExportButton';
 import { exportSlidesToPDF } from '../../../utils/pdfExport';
 import PptSlide from '../components/PptSlide';
-import type { PptSlideData } from '../../../types/ppt';
 import { getTemplateById } from '../../../utils/pptTemplates';
 import type { PptReport } from '../../../types/ppt';
 
@@ -13,7 +11,6 @@ interface Props {
 }
 
 export default function Step3Preview({ report, onSave }: Props) {
-  const { isDark } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const template = getTemplateById(report.templateId)!;
 
@@ -51,11 +48,7 @@ export default function Step3Preview({ report, onSave }: Props) {
             slide={slide}
             template={template}
             totalPages={report.slides.length}
-          >
-            <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500 text-sm">
-              <p>内容区域（数据可视化组件将在第二阶段接入）</p>
-            </div>
-          </PptSlide>
+          />
         ))}
       </div>
     </div>

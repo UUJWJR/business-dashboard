@@ -1,4 +1,5 @@
 import type { PptSlideData, PptTemplate } from '../../../types/ppt';
+import SlideTable from './SlideTable';
 
 interface PptSlideProps {
   slide: PptSlideData;
@@ -16,6 +17,36 @@ export default function PptSlide({ slide, template, totalPages, children }: PptS
   const conclusionText = template.conclusionStyle?.color || (isDark ? '#e5e7eb' : '#1A1A1A');
   const noteColor = template.noteStyle?.color || (isDark ? '#9ca3af' : '#595959');
   const pageNumColor = template.pageNumberStyle?.color || (isDark ? '#9ca3af' : '#8C8C8C');
+
+  const renderContent = () => {
+    if (children) return children;
+
+    switch (slide.content.type) {
+      case 'table':
+        return (
+          <SlideTable
+            columns={slide.content.columns}
+            rows={slide.content.rows}
+          />
+        );
+      case 'text':
+        return (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-sm text-gray-500 dark:text-gray-400 whitespace-pre-wrap">
+              {slide.content.body || '暂无内容'}
+            </p>
+          </div>
+        );
+      case 'chart':
+      case 'mixed':
+      default:
+        return (
+          <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500 text-sm">
+            <p>图表内容（将在后续阶段支持）</p>
+          </div>
+        );
+    }
+  };
 
   return (
     <section
@@ -60,7 +91,7 @@ export default function PptSlide({ slide, template, totalPages, children }: PptS
 
       {/* Content area */}
       <div className="flex-1 min-h-0 overflow-auto px-6 pt-3 pb-2">
-        {children}
+        {renderContent()}
       </div>
 
       {/* Note area */}
