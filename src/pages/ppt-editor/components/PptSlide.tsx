@@ -1,14 +1,67 @@
-import type { PptSlideData, PptTemplate } from '../../../types/ppt';
+import type { PptSlideData, PptTemplate, ContentBlock } from '../../../types/ppt';
 import SlideTable from './SlideTable';
 
 interface PptSlideProps {
   slide: PptSlideData;
   template: PptTemplate;
   totalPages: number;
-  children?: React.ReactNode;
 }
 
-export default function PptSlide({ slide, template, totalPages, children }: PptSlideProps) {
+function getBlockLayoutClass(count: number, index: number): string {
+  if (count === 1) return 'col-span-full';
+  if (count === 2) return 'col-span-1';
+  if (count === 3) {
+    return index === 0 ? 'col-span-full' : 'col-span-1';
+  }
+  if (count === 4) return 'col-span-1';
+  // 5+: first full, rest 3 per row
+  if (index === 0) return 'col-span-full';
+  return 'col-span-1';
+}
+
+function getGridCols(count: number): string {
+  if (count <= 4) return 'grid-cols-2';
+  return 'grid-cols-3';
+}
+
+function renderBlock(block: ContentBlock) {
+  switch (block.type) {
+    case 'table': {
+      const cfg = block.config as { columns: string[]; rows: Record<string, string | number>[] };
+      return (
+        <div className="flex flex-col h-full">
+          {block.conclusion && (
+            <div className="mb-2 px-2 py-1.5 rounded border-l-2 border-primary-400 bg-primary-50/30 dark:bg-primary-900/10 text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+              {block.conclusion}
+            </div>
+          )}
+          <div className="flex-1 min-h-0 overflow-auto">
+            <SlideTable columns={cfg.columns} rows={cfg.rows} />
+          </div>
+        </div>
+      );
+    }
+    case 'text': {
+      const cfg = block.config as { body: string };
+      return (
+        <div className="flex items-center justify-center h-full">
+          <p className="text-sm text-gray-500 dark:text-gray-400 whitespace-pre-wrap">
+            {cfg.body || '暂无内容'}
+          </p>
+        </div>
+      );
+    }
+    case 'chart':
+    default:
+      return (
+        <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500 text-sm">
+          <p>图表内容（将在后续阶段支持）</p>
+        </div>
+      );
+  }
+}
+
+export default function PptSlide({ slide, template, totalPages }: PptSlideProps) {
   const isDark = template.id === 'dark-luxury';
   const bgColor = template.backgroundColor;
   const headerColor = template.headerStyle.color;
@@ -17,36 +70,6 @@ export default function PptSlide({ slide, template, totalPages, children }: PptS
   const conclusionText = template.conclusionStyle?.color || (isDark ? '#e5e7eb' : '#1A1A1A');
   const noteColor = template.noteStyle?.color || (isDark ? '#9ca3af' : '#595959');
   const pageNumColor = template.pageNumberStyle?.color || (isDark ? '#9ca3af' : '#8C8C8C');
-
-  const renderContent = () => {
-    if (children) return children;
-
-    switch (slide.content.type) {
-      case 'table':
-        return (
-          <SlideTable
-            columns={slide.content.columns}
-            rows={slide.content.rows}
-          />
-        );
-      case 'text':
-        return (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-sm text-gray-500 dark:text-gray-400 whitespace-pre-wrap">
-              {slide.content.body || '暂无内容'}
-            </p>
-          </div>
-        );
-      case 'chart':
-      case 'mixed':
-      default:
-        return (
-          <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500 text-sm">
-            <p>图表内容（将在后续阶段支持）</p>
-          </div>
-        );
-    }
-  };
 
   return (
     <section
@@ -74,24 +97,54 @@ export default function PptSlide({ slide, template, totalPages, children }: PptS
       </div>
 
       {/* Conclusion area */}
-      <div
-        className="flex-none mx-6 px-3 py-2.5 rounded-md border-l-4"
-        style={{
-          backgroundColor: conclusionBg,
-          borderLeftColor: conclusionBorder,
-        }}
-      >
-        <p
-          className="text-sm md:text-base leading-relaxed"
-          style={{ color: conclusionText }}
+      {slide.conclusion && (
+        <div
+          className="flex-none mx-6 px-3 py-2.5 rounded-md border-l-4"
+          style={{
+            backgroundColor: conclusionBg,
+            borderLeftColor: conclusionBorder,
+          }}
         >
-          {slide.conclusion}
-        </p>
-      </div>
+          <p
+            className="text-sm md:text-base leading-relaxed"
+            style={{ color: conclusionText }}
+          >
+            {slide.conclusion}
+          </p>
+        </div>
+      )}
 
       {/* Content area */}
       <div className="flex-1 min-h-0 overflow-auto px-6 pt-3 pb-2">
-        {renderContent()}
+        {slide.content.type === 'mixed' && slide.content.blocks.length > 0 ? (
+          (() => {
+            const blocks = slide.content.blocks;
+            return (
+              <div className={`grid ${getGridCols(blocks.length)} gap-3 h-full`}>
+                {blocks.map((block, i) => (
+                  <div
+                    key={block.id}
+                    className={`${getBlockLayoutClass(blocks.length, i)} min-h-0 overflow-hidden`}
+                  >
+                    {renderBlock(block)}
+                  </div>
+                ))}
+              </div>
+            );
+          })()
+        ) : slide.content.type === 'table' ? (
+          <SlideTable columns={slide.content.columns} rows={slide.content.rows} />
+        ) : slide.content.type === 'text' ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-sm text-gray-500 dark:text-gray-400 whitespace-pre-wrap">
+              {slide.content.body || '暂无内容'}
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500 text-sm">
+            <p>暂无内容</p>
+          </div>
+        )}
       </div>
 
       {/* Note area */}

@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react';
 import { Sparkles, Loader2, Wand2 } from 'lucide-react';
-import { useAIConfig, generateConclusion, polishConclusion } from '../../../hooks/useAIConfig';
+import { useAIConfigContext } from '../../../contexts/AIConfigContext';
+import { generateConclusion, polishConclusion } from '../../../hooks/useAIConfig';
 
 interface Props {
-  slideIndex: number;
   tableData?: { columns: string[]; rows: Record<string, string | number>[] };
   title: string;
   currentConclusion: string;
@@ -11,13 +11,12 @@ interface Props {
 }
 
 export default function AIConclusionGenerator({
-  slideIndex,
   tableData,
   title,
   currentConclusion,
   onUpdate,
 }: Props) {
-  const { config, isConfigured } = useAIConfig();
+  const { config, isConfigured } = useAIConfigContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [polishMode, setPolishMode] = useState(false);

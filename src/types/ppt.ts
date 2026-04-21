@@ -19,11 +19,19 @@ export interface PptSlideData {
   pageNumber: number;
 }
 
+export interface ContentBlock {
+  id: string;
+  type: 'chart' | 'table' | 'text';
+  title?: string;
+  conclusion: string;
+  config: unknown;
+}
+
 export type SlideContent =
   | { type: 'chart'; chartType: 'line' | 'bar' | 'pie'; data: unknown }
   | { type: 'table'; columns: string[]; rows: Record<string, string | number>[] }
   | { type: 'text'; body: string }
-  | { type: 'mixed'; blocks: Array<{ type: 'chart' | 'table' | 'text'; config: unknown }> };
+  | { type: 'mixed'; blocks: ContentBlock[] };
 
 export interface PptTemplate {
   id: string;

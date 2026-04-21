@@ -16,7 +16,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
+import { GripVertical, ChevronDown, ChevronUp, Table2 } from 'lucide-react';
 import type { PptSlideData } from '../../../types/ppt';
 import MarkdownEditor from './MarkdownEditor';
 import AIConclusionGenerator from './AIConclusionGenerator';
@@ -27,12 +27,23 @@ interface SortableItemProps {
   isExpanded: boolean;
   onToggle: () => void;
   onUpdate: (field: keyof PptSlideData, value: string) => void;
+  onUpdateBlockConclusion: (blockId: string, value: string) => void;
   titleError: boolean;
   conclusionError: boolean;
   noteError: boolean;
 }
 
-function SortableItem({ slide, index, isExpanded, onToggle, onUpdate, titleError, conclusionError, noteError }: SortableItemProps) {
+function SortableItem({
+  slide,
+  index,
+  isExpanded,
+  onToggle,
+  onUpdate,
+  onUpdateBlockConclusion,
+  titleError,
+  conclusionError,
+  noteError,
+}: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -48,6 +59,8 @@ function SortableItem({ slide, index, isExpanded, onToggle, onUpdate, titleError
     zIndex: isDragging ? 10 : 1,
     opacity: isDragging ? 0.8 : 1,
   };
+
+  const blockCount = slide.content.type === 'mixed' ? slide.content.blocks.length : 0;
 
   return (
     <div
@@ -78,6 +91,12 @@ function SortableItem({ slide, index, isExpanded, onToggle, onUpdate, titleError
             <span className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[300px]">
               {slide.title}
             </span>
+            {blockCount > 0 && (
+              <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+                <Table2 className="w-3 h-3" />
+                {blockCount} 个表格
+              </span>
+            )}
             {(titleError || conclusionError || noteError) && (
               <span className="text-xs text-red-500">字数超限</span>
             )}
@@ -112,31 +131,69 @@ function SortableItem({ slide, index, isExpanded, onToggle, onUpdate, titleError
             </p>
           </div>
 
+          {/* Slide-level conclusion (optional) */}
           <div>
             <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-              结论（最多150字）
+              本页总结论（最多150字）
             </label>
             <MarkdownEditor
               value={slide.conclusion}
               onChange={(value) => onUpdate('conclusion', value)}
-              placeholder="输入分析结论，支持 Markdown 语法"
-              rows={3}
+              placeholder="输入本页总体分析结论，支持 Markdown 语法"
+              rows={2}
             />
             <p className={`mt-0.5 text-xs text-right ${conclusionError ? 'text-red-500' : 'text-gray-400'}`}>
               {slide.conclusion.length}/150
             </p>
-            <AIConclusionGenerator
-              slideIndex={index}
-              tableData={
-                slide.content.type === 'table'
-                  ? { columns: slide.content.columns, rows: slide.content.rows }
-                  : undefined
-              }
-              title={slide.title}
-              currentConclusion={slide.conclusion}
-              onUpdate={(value) => onUpdate('conclusion', value)}
-            />
           </div>
+
+          {/* Per-block editing */}
+          {slide.content.type === 'mixed' && slide.content.blocks.length > 0 && (
+            <div className="space-y-3">
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                表格分析结论
+              </p>
+              {slide.content.blocks.map((block, bIdx) => (
+                <div
+                  key={block.id}
+                  className="p-3 rounded-md border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 space-y-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-medium">
+                      {bIdx + 1}
+                    </span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {block.title || `表格 ${bIdx + 1}`}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      ({(block.config as { columns?: string[] })?.columns?.length ?? 0} 列)
+                    </span>
+                  </div>
+
+                  <MarkdownEditor
+                    value={block.conclusion}
+                    onChange={(value) => onUpdateBlockConclusion(block.id, value)}
+                    placeholder={`输入表格 ${bIdx + 1} 的分析结论`}
+                    rows={2}
+                  />
+
+                  <AIConclusionGenerator
+                    tableData={
+                      block.type === 'table'
+                        ? {
+                            columns: (block.config as { columns: string[] }).columns,
+                            rows: (block.config as { rows: Record<string, string | number>[] }).rows,
+                          }
+                        : undefined
+                    }
+                    title={slide.title}
+                    currentConclusion={block.conclusion}
+                    onUpdate={(value) => onUpdateBlockConclusion(block.id, value)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
 
           <div>
             <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
@@ -168,9 +225,16 @@ interface Props {
   errors: Record<string, boolean>;
   onReorder: (slides: PptSlideData[]) => void;
   onUpdateSlide: (index: number, field: keyof PptSlideData, value: string) => void;
+  onUpdateBlockConclusion: (slideIndex: number, blockId: string, value: string) => void;
 }
 
-export default function DraggableSlideList({ slides, errors, onReorder, onUpdateSlide }: Props) {
+export default function DraggableSlideList({
+  slides,
+  errors,
+  onReorder,
+  onUpdateSlide,
+  onUpdateBlockConclusion,
+}: Props) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
   const sensors = useSensors(
@@ -206,6 +270,9 @@ export default function DraggableSlideList({ slides, errors, onReorder, onUpdate
               isExpanded={expandedIndex === index}
               onToggle={() => setExpandedIndex(expandedIndex === index ? null : index)}
               onUpdate={(field, value) => onUpdateSlide(index, field, value)}
+              onUpdateBlockConclusion={(blockId, value) =>
+                onUpdateBlockConclusion(index, blockId, value)
+              }
               titleError={slide.title.length > 20 || errors[`${index}-title`]}
               conclusionError={slide.conclusion.length > 150 || errors[`${index}-conclusion`]}
               noteError={slide.note.length > 40 || errors[`${index}-note`]}

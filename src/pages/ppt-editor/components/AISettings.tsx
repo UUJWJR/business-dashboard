@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { X, Sparkles, Check, AlertCircle } from 'lucide-react';
-import { useAIConfig } from '../../../hooks/useAIConfig';
+import { useState, useRef } from 'react';
+import { X, Sparkles, Check, AlertCircle, Download, Upload } from 'lucide-react';
+import { useAIConfigContext } from '../../../contexts/AIConfigContext';
 
 interface Props {
   onClose: () => void;
@@ -13,9 +13,11 @@ function normalizeBaseUrl(url: string): string {
 }
 
 export default function AISettings({ onClose }: Props) {
-  const { config, setConfig, isConfigured } = useAIConfig();
+  const { config, setConfig, isConfigured, exportConfig, importConfig } = useAIConfigContext();
   const [testStatus, setTestStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
   const [testMessage, setTestMessage] = useState('');
+  const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleTest = async () => {
     if (!config.apiKey) return;
@@ -55,6 +57,23 @@ export default function AISettings({ onClose }: Props) {
     } catch (err) {
       setTestStatus('error');
       setTestMessage(err instanceof Error ? err.message : '网络请求失败，请检查 Base URL');
+    }
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImportStatus('idle');
+    try {
+      await importConfig(file);
+      setImportStatus('success');
+    } catch {
+      setImportStatus('error');
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -147,6 +166,46 @@ export default function AISettings({ onClose }: Props) {
               </span>
             )}
           </div>
+
+          <div className="border-t border-gray-100 dark:border-gray-800 pt-4 space-y-2">
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">配置文件</p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={exportConfig}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <Download className="w-3 h-3" />
+                导出配置
+              </button>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <Upload className="w-3 h-3" />
+                导入配置
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/json"
+                onChange={handleImport}
+                className="hidden"
+              />
+            </div>
+            {importStatus === 'success' && (
+              <p className="text-xs text-green-600">配置导入成功</p>
+            )}
+            {importStatus === 'error' && (
+              <p className="text-xs text-red-500">配置导入失败，请检查文件格式</p>
+            )}
+          </div>
+
+          {isConfigured && (
+            <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-md">
+              <Check className="w-3 h-3" />
+              当前已配置并启用 AI 功能
+            </div>
+          )}
         </div>
       </div>
     </div>
