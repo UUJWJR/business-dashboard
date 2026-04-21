@@ -46,7 +46,7 @@ export default function Navbar({ isDark, toggleTheme, onMenuClick }: NavbarProps
             <BarChart3 className="w-4 h-4 text-white" />
           </div>
           <span className="text-lg font-semibold text-gray-900 dark:text-white hidden sm:block tracking-tight">
-            Dashboard
+            EasyWork工作台
           </span>
         </div>
 
