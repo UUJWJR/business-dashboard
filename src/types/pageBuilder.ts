@@ -1,42 +1,98 @@
 import type { TrendChartData, DistributionData, RegionData } from './index';
 
-export type PageBuilderElementType = 'title' | 'text' | 'table' | 'chart';
+export type PageBuilderElementType = 'title' | 'text' | 'table' | 'chart' | 'shape' | 'image';
+export type GridType = 'none' | 'dot' | 'grid';
+export type ChartType = 'bar' | 'line' | 'pie' | 'scatter' | 'radar' | 'waterfall';
+export type ChartThemeName = 'mckinsey' | 'china' | 'tech';
+export type ShapeType = 'rect' | 'roundedRect' | 'circle' | 'triangle' | 'arrow' | 'line';
 
 export interface Position {
-  x: number; // percentage of canvas width (0-100)
-  y: number; // percentage of canvas height (0-100)
+  x: number; // percentage 0-100
+  y: number;
 }
 
 export interface Size {
-  width: number;  // percentage of canvas width (0-100)
-  height: number; // percentage of canvas height (0-100)
+  width: number;  // percentage 0-100
+  height: number;
 }
 
-export interface TitlePayload {
-  text: string;
+export interface TextStyle {
   fontSize?: number;
-  align?: 'left' | 'center' | 'right';
+  color?: string;
+  fontWeight?: 'normal' | 'bold';
+  fontStyle?: 'normal' | 'italic';
+  textAlign?: 'left' | 'center' | 'right' | 'justify';
+  lineHeight?: number;
+  textDecoration?: 'none' | 'underline' | 'line-through';
 }
 
-export interface TextPayload {
+export interface TitlePayload extends TextStyle {
   text: string;
-  fontSize?: number;
+}
+
+export interface TextPayload extends TextStyle {
+  text: string;
+}
+
+export interface TableCellStyle {
+  backgroundColor?: string;
+  color?: string;
+  fontWeight?: 'normal' | 'bold';
+  textAlign?: 'left' | 'center' | 'right';
+}
+
+export interface TableCell {
+  value: string;
+  rowSpan?: number;
+  colSpan?: number;
+  style?: TableCellStyle;
+  hidden?: boolean;
 }
 
 export interface TablePayload {
-  headers: string[];
-  rows: (string | number)[][];
+  cells: TableCell[][];
+  colWidths: number[];  // percentage per column
+  rowHeights: number[]; // percentage per row
+  headerRowCount: number;
 }
 
-export type ChartType = 'bar' | 'line' | 'pie';
+export interface ScatterData {
+  series: { name: string; data: [number, number][] }[];
+}
+
+export interface RadarData {
+  indicator: { name: string; max: number }[];
+  series: { name: string; data: number[] }[];
+}
+
+export interface WaterfallDataItem {
+  name: string;
+  value: number;
+  isTotal?: boolean;
+}
 
 export interface ChartPayload {
   chartType: ChartType;
+  chartTheme: ChartThemeName;
   title: string;
-  data: TrendChartData | DistributionData[] | RegionData[];
+  data: TrendChartData | DistributionData[] | RegionData[] | ScatterData | RadarData | WaterfallDataItem[];
 }
 
-export type ElementPayload = TitlePayload | TextPayload | TablePayload | ChartPayload;
+export interface ShapePayload {
+  shapeType: ShapeType;
+  fillColor?: string;
+  strokeColor?: string;
+  strokeWidth?: number;
+  opacity?: number;
+}
+
+export interface ImagePayload {
+  src: string;
+  borderRadius?: number;
+  opacity?: number;
+}
+
+export type ElementPayload = TitlePayload | TextPayload | TablePayload | ChartPayload | ShapePayload | ImagePayload;
 
 export interface PageBuilderElement {
   id: string;
@@ -47,9 +103,21 @@ export interface PageBuilderElement {
   zIndex: number;
 }
 
-export interface PageBuilderState {
+export interface Slide {
+  id: string;
+  name: string;
   elements: PageBuilderElement[];
+  background: string;
+}
+
+export interface PageBuilderState {
+  slides: Slide[];
+  activeSlideId: string;
   selectedId: string | null;
+  gridType: GridType;
+  gridSize: number;
+  isSubmitted: boolean;
+  submittedAt: string | null;
 }
 
 export interface CanvasSize {
