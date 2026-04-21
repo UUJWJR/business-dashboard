@@ -1,21 +1,11 @@
 import type {
   KPIData,
   KPIMetric,
-  RevenueData,
-  UserGrowthData,
-  MarketShareData,
-  RadarData,
-  ComboData,
   TimeRange,
   TrendChartData,
   DistributionData,
   RegionData,
   SalesRevenueData,
-  CustomerAcquisitionData,
-  BroadbandData,
-  SmartHomeData,
-  RightsProductsData,
-  HomeNetworkingData,
   HomePreviewData,
 } from '../types';
 
@@ -109,90 +99,6 @@ export function generateKPIs(): KPIData[] {
       color: 'primary',
     },
   ];
-}
-
-export function generateRevenue(): RevenueData {
-  const totalRevenue: number[] = [];
-  const netProfit: number[] = [];
-  let base = random(500, 800);
-  for (let i = 0; i < 12; i++) {
-    base = base * random(0.9, 1.15);
-    const revenue = Math.round(base);
-    totalRevenue.push(revenue);
-    netProfit.push(Math.round(revenue * random(0.2, 0.35)));
-  }
-  return { months: MONTHS, totalRevenue, netProfit };
-}
-
-export function generateUserGrowth(): UserGrowthData {
-  const newUsers: number[] = [];
-  const activeUsers: number[] = [];
-  let activeBase = random(30, 60);
-  for (let i = 0; i < 12; i++) {
-    const nu = Math.round(random(2, 12));
-    newUsers.push(nu);
-    activeBase = activeBase * random(0.95, 1.12) + nu * random(0.3, 0.7);
-    activeUsers.push(Math.round(activeBase));
-  }
-  return { months: MONTHS, newUsers, activeUsers };
-}
-
-export function generateMarketShare(): MarketShareData[] {
-  const names = ['企业级SaaS', '云基础设施', '数据分析', 'AI服务', '安全合规', '咨询服务'];
-  const values = names.map(() => randomInt(10, 40));
-  const sum = values.reduce((a, b) => a + b, 0);
-  return names.map((name, i) => ({
-    name,
-    value: Math.round((values[i] / sum) * 100),
-  }));
-}
-
-export function generateRadar(): RadarData {
-  const indicator = [
-    { name: '收入增长', max: 100 },
-    { name: '用户增长', max: 100 },
-    { name: '市场份额', max: 100 },
-    { name: '产品竞争力', max: 100 },
-    { name: '运营效率', max: 100 },
-    { name: '客户满意度', max: 100 },
-  ];
-  const current = indicator.map(() => randomInt(60, 95));
-  const previous = indicator.map(() => randomInt(50, 85));
-  return { indicator, current, previous };
-}
-
-export function generateCombo(): ComboData {
-  const channels = CHANNELS;
-  const newUsers = channels.map(() => randomInt(5, 40));
-  const conversionRate = channels.map(() => random(1, 15));
-  return { channels, newUsers, conversionRate };
-}
-
-export function generateAllData(): {
-  kpis: KPIData[];
-  revenue: RevenueData;
-  userGrowth: UserGrowthData;
-  marketShare: MarketShareData[];
-  radar: RadarData;
-  combo: ComboData;
-} {
-  return {
-    kpis: generateKPIs(),
-    revenue: generateRevenue(),
-    userGrowth: generateUserGrowth(),
-    marketShare: generateMarketShare(),
-    radar: generateRadar(),
-    combo: generateCombo(),
-  };
-}
-
-export function updateKPIsRandomly(kpis: KPIData[]): KPIData[] {
-  return kpis.map((kpi) => {
-    const variation = random(-0.05, 0.05);
-    const newValue = kpi.value * (1 + variation);
-    const newTrend = kpi.trend + random(-2, 2);
-    return { ...kpi, value: newValue, trend: newTrend };
-  });
 }
 
 // --- Module-specific generators ---
@@ -324,7 +230,7 @@ export function generateSalesRevenueData(_timeRange: TimeRange): SalesRevenueDat
   return { kpis, monthlyTrend, composition, byRegion, byProduct, byChannel, byProductTrend, byChannelTrend };
 }
 
-export function generateCustomerAcquisitionData(_timeRange: TimeRange): CustomerAcquisitionData {
+export function generateCustomerAcquisitionData(_timeRange: TimeRange): any {
   // Daily trend (30 days)
   const dailyLabels: string[] = [];
   const dailyNew: number[] = [];
@@ -465,7 +371,7 @@ export function generateCustomerAcquisitionData(_timeRange: TimeRange): Customer
   return { kpis, dailyTrend, monthlyTrend, typeDistribution, channelDistribution, typeTrend, channelTrend, churnRisk, churnRiskTrend };
 }
 
-export function generateBroadbandData(_timeRange: TimeRange): BroadbandData {
+export function generateBroadbandData(_timeRange: TimeRange): any {
   const monthlyNew: number[] = [];
   for (let i = 0; i < 12; i++) {
     monthlyNew.push(Math.round(random(40, 120) * seasonalFactor(i) * 10) / 10);
@@ -557,7 +463,7 @@ export function generateBroadbandData(_timeRange: TimeRange): BroadbandData {
   return { kpis, monthlyTrend, speedDistribution, speedTrend, byRegion, competitorShare };
 }
 
-export function generateSmartHomeData(_timeRange: TimeRange): SmartHomeData {
+export function generateSmartHomeData(_timeRange: TimeRange): any {
   const monthlySales: number[] = [];
   for (let i = 0; i < 12; i++) {
     // Promotions in June and November
@@ -665,7 +571,7 @@ export function generateSmartHomeData(_timeRange: TimeRange): SmartHomeData {
   return { kpis, monthlyTrend, productDistribution, bindingRate, topProducts, satisfactionTrend, feedbackDistribution };
 }
 
-export function generateRightsProductsData(_timeRange: TimeRange): RightsProductsData {
+export function generateRightsProductsData(_timeRange: TimeRange): any {
   const monthlySubs: number[] = [];
   for (let i = 0; i < 12; i++) {
     monthlySubs.push(Math.round(random(50, 120) * seasonalFactor(i) * 10) / 10);
@@ -760,7 +666,7 @@ export function generateRightsProductsData(_timeRange: TimeRange): RightsProduct
   return { kpis, monthlyTrend, typeDistribution, topRights, revenueByType, ageDistribution };
 }
 
-export function generateHomeNetworkingData(_timeRange: TimeRange): HomeNetworkingData {
+export function generateHomeNetworkingData(_timeRange: TimeRange): any {
   const monthlyOrders: number[] = [];
   for (let i = 0; i < 12; i++) {
     monthlyOrders.push(Math.round(random(5, 18) * seasonalFactor(i) * 10) / 10);
