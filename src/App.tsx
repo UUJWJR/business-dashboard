@@ -4,11 +4,7 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import SalesRevenue from './pages/SalesRevenue';
-import CustomerAcquisition from './pages/CustomerAcquisition';
-import Broadband from './pages/Broadband';
-import SmartHome from './pages/SmartHome';
-import RightsProducts from './pages/RightsProducts';
-import HomeNetworking from './pages/HomeNetworking';
+
 import PageBuilder from './pages/PageBuilder';
 
 function App() {
@@ -41,46 +37,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/customer-acquisition/*"
-            element={
-              <ProtectedRoute>
-                <CustomerAcquisition />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/broadband/*"
-            element={
-              <ProtectedRoute>
-                <Broadband />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/smart-home/*"
-            element={
-              <ProtectedRoute>
-                <SmartHome />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/rights-products/*"
-            element={
-              <ProtectedRoute>
-                <RightsProducts />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/home-networking/*"
-            element={
-              <ProtectedRoute>
-                <HomeNetworking />
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path="/page-builder"
             element={
