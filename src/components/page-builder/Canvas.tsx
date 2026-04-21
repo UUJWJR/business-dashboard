@@ -1,11 +1,15 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import type { PageBuilderElement, CanvasSize } from '../../types/pageBuilder';
+import type { PageBuilderElement, CanvasSize, GridType } from '../../types/pageBuilder';
 import CanvasElement from './CanvasElement';
+import GridOverlay from './GridOverlay';
 
 interface CanvasProps {
   elements: PageBuilderElement[];
   selectedId: string | null;
+  gridType: GridType;
+  gridSize: number;
+  isSubmitted: boolean;
   onSelectElement: (id: string | null) => void;
   onUpdateElement: (id: string, partial: Partial<PageBuilderElement>) => void;
   onBringToFront: (id: string) => void;
@@ -15,6 +19,9 @@ interface CanvasProps {
 export default function Canvas({
   elements,
   selectedId,
+  gridType,
+  gridSize,
+  isSubmitted,
   onSelectElement,
   onUpdateElement,
   onBringToFront,
@@ -62,22 +69,7 @@ export default function Canvas({
           isOver ? 'ring-2 ring-primary-400 ring-offset-2 dark:ring-offset-surface-950' : ''
         }`}
       >
-        {/* Grid overlay - light mode */}
-        <div
-          className="absolute inset-0 pointer-events-none dark:hidden"
-          style={{
-            backgroundImage: `linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)`,
-            backgroundSize: '20px 20px',
-          }}
-        />
-        {/* Grid overlay - dark mode */}
-        <div
-          className="absolute inset-0 pointer-events-none hidden dark:block"
-          style={{
-            backgroundImage: `linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)`,
-            backgroundSize: '20px 20px',
-          }}
-        />
+        <GridOverlay gridType={gridType} gridSize={gridSize} />
 
         {elements.map((element) => (
           <CanvasElement
@@ -85,6 +77,7 @@ export default function Canvas({
             element={element}
             canvasSize={canvasSize}
             isSelected={element.id === selectedId}
+            isReadOnly={isSubmitted}
             onSelect={() => {
               onSelectElement(element.id);
               onBringToFront(element.id);

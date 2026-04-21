@@ -1,15 +1,18 @@
 import { useCallback, useRef, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
-import type { PageBuilderElement, CanvasSize, TitlePayload, TextPayload, TablePayload, ChartPayload } from '../../types/pageBuilder';
+import type { PageBuilderElement, CanvasSize, TitlePayload, TextPayload, TablePayload, ChartPayload, ShapePayload, ImagePayload } from '../../types/pageBuilder';
 import TitleElement from './element-renderers/TitleElement';
 import TextElement from './element-renderers/TextElement';
 import TableElement from './element-renderers/TableElement';
 import ChartElement from './element-renderers/ChartElement';
+import ShapeElement from './element-renderers/ShapeElement';
+import ImageElement from './element-renderers/ImageElement';
 
 interface CanvasElementProps {
   element: PageBuilderElement;
   canvasSize: CanvasSize;
   isSelected: boolean;
+  isReadOnly: boolean;
   onSelect: () => void;
   onUpdate: (id: string, partial: Partial<PageBuilderElement>) => void;
   onRemove: (id: string) => void;
@@ -21,6 +24,7 @@ export default function CanvasElement({
   element,
   canvasSize,
   isSelected,
+  isReadOnly,
   onSelect,
   onUpdate,
   onRemove,
@@ -94,9 +98,13 @@ export default function CanvasElement({
       case 'text':
         return <TextElement content={element.content as TextPayload} isSelected={isSelected} onUpdate={(content: TextPayload) => onUpdate(element.id, { content })} />;
       case 'table':
-        return <TableElement content={element.content as TablePayload} />;
+        return <TableElement content={element.content as TablePayload} onUpdate={(content: TablePayload) => onUpdate(element.id, { content })} />;
       case 'chart':
         return <ChartElement content={element.content as ChartPayload} />;
+      case 'shape':
+        return <ShapeElement content={element.content as ShapePayload} />;
+      case 'image':
+        return <ImageElement content={element.content as ImagePayload} />;
       default:
         return null;
     }
@@ -113,12 +121,14 @@ export default function CanvasElement({
       position={{ x: pixelX, y: pixelY }}
       size={{ width: pixelW, height: pixelH }}
       bounds="parent"
-      dragGrid={[gridPixelX, gridPixelY]}
-      resizeGrid={[gridPixelX, gridPixelY]}
-      onDragStart={onSelect}
-      onDragStop={handleDragStop}
-      onResizeStart={onSelect}
-      onResizeStop={handleResizeStop}
+      dragGrid={isReadOnly ? undefined : [gridPixelX, gridPixelY]}
+      resizeGrid={isReadOnly ? undefined : [gridPixelX, gridPixelY]}
+      disableDragging={isReadOnly}
+      enableResizing={!isReadOnly}
+      onDragStart={isReadOnly ? undefined : onSelect}
+      onDragStop={isReadOnly ? undefined : handleDragStop}
+      onResizeStart={isReadOnly ? undefined : onSelect}
+      onResizeStop={isReadOnly ? undefined : handleResizeStop}
       className={`group ${isSelected ? 'z-50' : ''}`}
       style={{ zIndex: element.zIndex }}
       resizeHandleClasses={{

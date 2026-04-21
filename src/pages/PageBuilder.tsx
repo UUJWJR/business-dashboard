@@ -1,24 +1,38 @@
 import { useCallback, useRef } from 'react';
 import { DndContext, MouseSensor, TouchSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
-import { Presentation, Download, FileImage, Trash2 } from 'lucide-react';
+import { Presentation, Download, FileImage, Trash2, CheckCircle, RotateCcw } from 'lucide-react';
 import ModuleLayout from '../components/layout/ModuleLayout';
 import ComponentPanel from '../components/page-builder/ComponentPanel';
 import Canvas from '../components/page-builder/Canvas';
 import ElementToolbar from '../components/page-builder/ElementToolbar';
+import SlidePanel from '../components/page-builder/SlidePanel';
+import PropertyPanel from '../components/page-builder/PropertyPanel';
 import { usePageBuilder } from '../hooks/usePageBuilder';
 import { exportToPNG, exportToPDF } from '../utils/pageBuilderExport';
 import type { PageBuilderElementType } from '../types/pageBuilder';
 
 export default function PageBuilder() {
   const {
+    slides,
+    activeSlideId,
     elements,
+    activeSlide,
     selectedId,
+    gridType,
+    gridSize,
+    isSubmitted,
+    addSlide,
+    deleteSlide,
+    setActiveSlide,
+    updateSlide,
     addElement,
     updateElement,
     removeElement,
     selectElement,
     bringToFront,
-    autoResize,
+    setGrid,
+    submit,
+    undoSubmit,
     clearAll,
   } = usePageBuilder();
 
@@ -96,6 +110,23 @@ export default function PageBuilder() {
             <Download className="w-4 h-4" />
             导出PDF
           </button>
+          {isSubmitted ? (
+            <button
+              onClick={undoSubmit}
+              className="flex items-center gap-2 px-3 py-2 rounded-btn text-sm font-medium bg-white dark:bg-surface-900 border border-gray-200/80 dark:border-white/[0.06] text-primary-600 dark:text-primary-400 hover:bg-surface-50 dark:hover:bg-white/[0.04] transition-colors"
+            >
+              <RotateCcw className="w-4 h-4" />
+              撤销提交
+            </button>
+          ) : (
+            <button
+              onClick={submit}
+              className="flex items-center gap-2 px-3 py-2 rounded-btn text-sm font-medium bg-white dark:bg-surface-900 border border-gray-200/80 dark:border-white/[0.06] text-primary-600 dark:text-primary-400 hover:bg-surface-50 dark:hover:bg-white/[0.04] transition-colors"
+            >
+              <CheckCircle className="w-4 h-4" />
+              提交
+            </button>
+          )}
           <button
             onClick={clearAll}
             className="flex items-center gap-2 px-3 py-2 rounded-btn text-sm font-medium bg-white dark:bg-surface-900 border border-gray-200/80 dark:border-white/[0.06] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -108,21 +139,42 @@ export default function PageBuilder() {
     >
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
         <div ref={canvasContainerRef} className="relative flex h-[calc(100vh-8rem)] rounded-card overflow-hidden border border-gray-200/80 dark:border-white/[0.06] bg-white dark:bg-surface-900">
-          <ComponentPanel />
-          <Canvas
-            elements={elements}
-            selectedId={selectedId}
-            onSelectElement={selectElement}
+          <SlidePanel
+            slides={slides}
+            activeSlideId={activeSlideId}
+            onAddSlide={addSlide}
+            onDeleteSlide={deleteSlide}
+            onSetActiveSlide={setActiveSlide}
+          />
+          <div className="flex flex-col flex-1 min-w-0">
+            <Canvas
+              elements={elements}
+              selectedId={selectedId}
+              gridType={gridType}
+              gridSize={gridSize}
+              isSubmitted={isSubmitted}
+              onSelectElement={selectElement}
+              onUpdateElement={updateElement}
+              onBringToFront={bringToFront}
+              onRemoveElement={removeElement}
+            />
+            <ComponentPanel />
+          </div>
+          <PropertyPanel
+            selectedElement={selectedElement || null}
+            activeSlide={activeSlide || null}
+            gridType={gridType}
+            gridSize={gridSize}
             onUpdateElement={updateElement}
-            onBringToFront={bringToFront}
-            onRemoveElement={removeElement}
+            onUpdateSlide={updateSlide}
+            onSetGrid={setGrid}
           />
         </div>
         {selectedElement && (
           <ElementToolbar
             element={selectedElement}
             onUpdate={updateElement}
-            onAutoResize={autoResize}
+            onAutoResize={() => {}}
             onRemove={removeElement}
           />
         )}

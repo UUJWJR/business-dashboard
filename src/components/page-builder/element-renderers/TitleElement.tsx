@@ -32,8 +32,9 @@ export default function TitleElement({ content, isSelected, onUpdate }: TitleEle
     []
   );
 
+  const effectiveAlign = content.align || content.textAlign || 'left';
   const alignClass =
-    content.align === 'center' ? 'text-center' : content.align === 'right' ? 'text-right' : 'text-left';
+    effectiveAlign === 'center' ? 'text-center' : effectiveAlign === 'right' ? 'text-right' : 'text-left';
 
   return (
     <h2
@@ -43,10 +44,17 @@ export default function TitleElement({ content, isSelected, onUpdate }: TitleEle
       onDoubleClick={handleDoubleClick}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
-      className={`w-full h-full flex items-center px-2 text-gray-900 dark:text-white font-bold outline-none cursor-pointer ${alignClass} ${
+      className={`w-full h-full flex items-center px-2 text-gray-900 dark:text-white outline-none cursor-pointer ${alignClass} ${
         isEditing ? 'bg-primary-50/50 dark:bg-primary-900/20 rounded' : ''
       }`}
-      style={{ fontSize: `${content.fontSize || 24}px`, lineHeight: 1.3 }}
+      style={{
+        fontSize: `${content.fontSize || 24}px`,
+        lineHeight: 1.3,
+        color: content.color || undefined,
+        fontWeight: content.fontWeight || 'bold',
+        fontStyle: content.fontStyle || 'normal',
+        textDecoration: content.textDecoration || 'none',
+      }}
     >
       {content.text}
     </h2>

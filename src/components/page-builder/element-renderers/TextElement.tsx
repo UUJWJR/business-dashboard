@@ -29,6 +29,15 @@ export default function TextElement({ content, isSelected, onUpdate }: TextEleme
     }
   }, []);
 
+  const alignClass =
+    content.textAlign === 'center'
+      ? 'text-center'
+      : content.textAlign === 'right'
+        ? 'text-right'
+        : content.textAlign === 'justify'
+          ? 'text-justify'
+          : 'text-left';
+
   return (
     <p
       ref={ref}
@@ -37,10 +46,17 @@ export default function TextElement({ content, isSelected, onUpdate }: TextEleme
       onDoubleClick={handleDoubleClick}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
-      className={`w-full h-full p-2 text-gray-700 dark:text-gray-300 outline-none cursor-pointer overflow-auto ${
+      className={`w-full h-full p-2 text-gray-700 dark:text-gray-300 outline-none cursor-pointer overflow-auto ${alignClass} ${
         isEditing ? 'bg-primary-50/50 dark:bg-primary-900/20 rounded' : ''
       }`}
-      style={{ fontSize: `${content.fontSize || 14}px`, lineHeight: 1.6 }}
+      style={{
+        fontSize: `${content.fontSize || 14}px`,
+        lineHeight: content.lineHeight ?? 1.6,
+        color: content.color || undefined,
+        fontWeight: content.fontWeight || 'normal',
+        fontStyle: content.fontStyle || 'normal',
+        textDecoration: content.textDecoration || 'none',
+      }}
     >
       {content.text}
     </p>

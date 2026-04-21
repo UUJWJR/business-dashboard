@@ -1,10 +1,15 @@
 import { useMemo } from 'react';
+import ReactECharts from 'echarts-for-react';
 import type { ChartPayload } from '../../../types/pageBuilder';
 import type { TrendChartData, DistributionData, RegionData } from '../../../types';
 import { useTheme } from '../../../hooks/useTheme';
+import { chartThemes } from '../../../utils/chartThemes';
 import SimpleBarChart from '../../charts/SimpleBarChart';
 import SimpleLineChart from '../../charts/SimpleLineChart';
 import SimplePieChart from '../../charts/SimplePieChart';
+import ScatterChart from '../../charts/ScatterChart';
+import RadarChart from '../../charts/RadarChart';
+import WaterfallChart from '../../charts/WaterfallChart';
 
 interface ChartElementProps {
   content: ChartPayload;
@@ -12,7 +17,8 @@ interface ChartElementProps {
 
 export default function ChartElement({ content }: ChartElementProps) {
   const { isDark } = useTheme();
-  const { chartType, title, data } = content;
+  const { chartType, chartTheme, title, data } = content;
+  const theme = chartThemes[chartTheme] || chartThemes.mckinsey;
 
   const mockRefresh = () => {};
 
@@ -48,10 +54,40 @@ export default function ChartElement({ content }: ChartElementProps) {
             className="h-full border-0 shadow-none"
           />
         );
+      case 'scatter':
+        return (
+          <ScatterChart
+            title={title}
+            data={data as import('../../../types/pageBuilder').ScatterData}
+            theme={theme}
+            onRefresh={mockRefresh}
+            className="h-full border-0 shadow-none"
+          />
+        );
+      case 'radar':
+        return (
+          <RadarChart
+            title={title}
+            data={data as import('../../../types/pageBuilder').RadarData}
+            theme={theme}
+            onRefresh={mockRefresh}
+            className="h-full border-0 shadow-none"
+          />
+        );
+      case 'waterfall':
+        return (
+          <WaterfallChart
+            title={title}
+            data={data as import('../../../types/pageBuilder').WaterfallDataItem[]}
+            theme={theme}
+            onRefresh={mockRefresh}
+            className="h-full border-0 shadow-none"
+          />
+        );
       default:
         return null;
     }
-  }, [chartType, title, data, isDark]);
+  }, [chartType, title, data, isDark, theme]);
 
   return (
     <div className="w-full h-full overflow-hidden">

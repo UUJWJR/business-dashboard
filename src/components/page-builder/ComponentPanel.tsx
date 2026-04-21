@@ -1,5 +1,5 @@
 import { useDraggable } from '@dnd-kit/core';
-import { Type, AlignLeft, Table, BarChart3 } from 'lucide-react';
+import { Type, AlignLeft, Table, BarChart3, Shapes, Image } from 'lucide-react';
 import type { PageBuilderElementType } from '../../types/pageBuilder';
 
 interface DraggableItemProps {
@@ -38,6 +38,8 @@ const items: { type: PageBuilderElementType; label: string; icon: React.ElementT
   { type: 'text', label: '文字', icon: AlignLeft },
   { type: 'table', label: '表格', icon: Table },
   { type: 'chart', label: '图表', icon: BarChart3 },
+  { type: 'shape', label: '形状', icon: Shapes },
+  { type: 'image', label: '图片', icon: Image },
 ];
 
 export default function ComponentPanel() {

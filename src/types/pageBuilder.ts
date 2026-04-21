@@ -1,5 +1,7 @@
 import type { TrendChartData, DistributionData, RegionData } from './index';
 
+export type { TrendChartData, DistributionData, RegionData } from './index';
+
 export type PageBuilderElementType = 'title' | 'text' | 'table' | 'chart' | 'shape' | 'image';
 export type GridType = 'none' | 'dot' | 'grid';
 export type ChartType = 'bar' | 'line' | 'pie' | 'scatter' | 'radar' | 'waterfall';
@@ -28,6 +30,7 @@ export interface TextStyle {
 
 export interface TitlePayload extends TextStyle {
   text: string;
+  align?: 'left' | 'center' | 'right'; // deprecated, use textAlign for compatibility
 }
 
 export interface TextPayload extends TextStyle {
