@@ -10,6 +10,7 @@ import SmartHome from './pages/SmartHome';
 import RightsProducts from './pages/RightsProducts';
 import HomeNetworking from './pages/HomeNetworking';
 import WeekReview from './pages/WeekReview';
+import PptEditor from './pages/ppt-editor/PptEditor';
 
 function App() {
   return (
@@ -86,6 +87,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <WeekReview />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ppt-editor/*"
+            element={
+              <ProtectedRoute>
+                <PptEditor />
               </ProtectedRoute>
             }
           />

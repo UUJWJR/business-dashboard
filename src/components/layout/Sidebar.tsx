@@ -13,6 +13,7 @@ import {
   Smartphone,
   BarChart3,
   CalendarCheck,
+  FileEdit,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -32,6 +33,7 @@ const menuItems: MenuItem[] = [
   { id: 'rights-products', label: '权益产品', icon: Gift, path: '/rights-products' },
   { id: 'home-networking', label: '家庭组网', icon: Network, path: '/home-networking' },
   { id: 'week-review', label: '周四复盘', icon: CalendarCheck, path: '/week-review' },
+  { id: 'ppt-editor', label: '撰写PPT', icon: FileEdit, path: '/ppt-editor' },
 ];
 
 interface SidebarProps {
