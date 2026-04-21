@@ -7,6 +7,11 @@ export interface AIConfig {
   model: string;
   baseUrl: string;
   enabled: boolean;
+  backup?: {
+    apiKey: string;
+    model: string;
+    baseUrl: string;
+  };
 }
 
 const DEFAULT_CONFIG: AIConfig = {
@@ -42,7 +47,10 @@ export function useAIConfig() {
     });
   }, []);
 
-  const isConfigured = config.enabled && config.apiKey.length > 10;
+  const isConfigured = config.enabled && (
+    config.apiKey.length > 10 ||
+    (config.backup?.apiKey?.length ?? 0) > 10
+  );
 
   return { config, setConfig, isConfigured };
 }
@@ -53,10 +61,77 @@ function normalizeBaseUrl(url: string): string {
   return `${trimmed}/v1`;
 }
 
-export async function generateConclusion(
+async function callChatCompletion(
   apiKey: string,
   model: string,
   baseUrl: string,
+  messages: { role: string; content: string }[],
+  maxTokens: number
+): Promise<string> {
+  const response = await fetch(`${normalizeBaseUrl(baseUrl)}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      max_tokens: maxTokens,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error?.message || `API 请求失败 (${response.status})`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content?.trim() || '';
+}
+
+async function tryWithFallback(
+  config: AIConfig,
+  messages: { role: string; content: string }[],
+  maxTokens: number
+): Promise<string> {
+  // 先尝试主配置
+  if (config.apiKey) {
+    try {
+      const result = await callChatCompletion(
+        config.apiKey,
+        config.model,
+        config.baseUrl,
+        messages,
+        maxTokens
+      );
+      if (result) return result;
+    } catch {
+      // 主配置失败，继续尝试备选
+    }
+  }
+
+  // 尝试备选配置
+  if (config.backup?.apiKey) {
+    try {
+      const result = await callChatCompletion(
+        config.backup.apiKey,
+        config.backup.model || config.model,
+        config.backup.baseUrl || config.baseUrl,
+        messages,
+        maxTokens
+      );
+      if (result) return result;
+    } catch {
+      // 备选也失败
+    }
+  }
+
+  throw new Error('主配置和备选配置均不可用，请检查 AI 参数设置');
+}
+
+export async function generateConclusion(
+  config: AIConfig,
   tableData: { columns: string[]; rows: Record<string, string | number>[] },
   title: string
 ): Promise<string> {
@@ -75,35 +150,16 @@ ${tableData.rows.slice(0, 5).map((row) => tableData.columns.map((c) => `${c}: ${
 
 请直接输出结论文本，不要添加任何前缀或说明。`;
 
-  const response = await fetch(`${normalizeBaseUrl(baseUrl)}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: 'system', content: '你是一位资深数据分析师，擅长从表格数据中提取关键洞察并生成简洁有力的分析结论。' },
-        { role: 'user', content: prompt },
-      ],
-      max_tokens: 300,
-    }),
-  });
+  const result = await tryWithFallback(config, [
+    { role: 'system', content: '你是一位资深数据分析师，擅长从表格数据中提取关键洞察并生成简洁有力的分析结论。' },
+    { role: 'user', content: prompt },
+  ], 300);
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.error?.message || `API 请求失败 (${response.status})`);
-  }
-
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content?.trim() || '生成失败，请重试';
+  return result || '生成失败，请重试';
 }
 
 export async function polishConclusion(
-  apiKey: string,
-  model: string,
-  baseUrl: string,
+  config: AIConfig,
   conclusion: string,
   instruction: string
 ): Promise<string> {
@@ -118,27 +174,10 @@ ${conclusion}
 
 请直接输出修改后的文本，不要添加任何前缀或说明。`;
 
-  const response = await fetch(`${normalizeBaseUrl(baseUrl)}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: 'system', content: '你是一位专业的商务文案编辑，擅长优化分析报告的表达。' },
-        { role: 'user', content: prompt },
-      ],
-      max_tokens: 300,
-    }),
-  });
+  const result = await tryWithFallback(config, [
+    { role: 'system', content: '你是一位专业的商务文案编辑，擅长优化分析报告的表达。' },
+    { role: 'user', content: prompt },
+  ], 300);
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.error?.message || `API 请求失败 (${response.status})`);
-  }
-
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content?.trim() || '润色失败，请重试';
+  return result || '润色失败，请重试';
 }

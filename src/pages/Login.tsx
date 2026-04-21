@@ -70,7 +70,7 @@ export default function Login() {
             <LogIn className="w-7 h-7 text-primary-600 dark:text-primary-400" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            欢迎登录经分工作台
+            欢迎登录 EasyWork 工作台
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             请输入您的账号和密码

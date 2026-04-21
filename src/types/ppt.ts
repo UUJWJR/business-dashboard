@@ -10,6 +10,8 @@ export interface PptReport {
   updatedAt: number;
 }
 
+export type SlideKind = 'cover' | 'outline' | 'body' | 'end';
+
 export interface PptSlideData {
   id: string;
   title: string;
@@ -17,6 +19,7 @@ export interface PptSlideData {
   content: SlideContent;
   note: string;
   pageNumber: number;
+  kind?: SlideKind;
 }
 
 export interface ContentBlock {

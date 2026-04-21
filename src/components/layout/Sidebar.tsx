@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
@@ -37,12 +37,14 @@ const menuItems: MenuItem[] = [
 ];
 
 interface SidebarProps {
+  visible: boolean;
+  collapsed: boolean;
+  onToggleCollapsed: () => void;
   mobileOpen?: boolean;
   onMobileClose?: () => void;
 }
 
-export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(false);
+export default function Sidebar({ visible, collapsed, onToggleCollapsed, mobileOpen = false, onMobileClose }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -77,7 +79,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
             <button
               key={item.id}
               onClick={() => handleNavigate(item.path)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium transition-colors relative ${
+              className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium transition-colors relative ${
                 active
                   ? 'text-primary-600 dark:text-primary-400 bg-primary-50/50 dark:bg-primary-900/10'
                   : 'text-gray-600 dark:text-gray-400 hover:bg-surface-100 dark:hover:bg-white/[0.04]'
@@ -99,6 +101,11 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
                   </motion.span>
                 )}
               </AnimatePresence>
+              {collapsed && (
+                <span className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2 py-1 bg-gray-800 dark:bg-gray-700 text-white text-xs rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-lg pointer-events-none">
+                  {item.label}
+                </span>
+              )}
             </button>
           );
         })}
@@ -106,7 +113,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
 
       <div className="px-2 hidden md:block">
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={onToggleCollapsed}
           className="w-full flex items-center justify-center p-2 rounded-btn hover:bg-surface-100 dark:hover:bg-white/[0.04] transition-colors"
         >
           {collapsed ? (
@@ -123,9 +130,12 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex fixed left-0 top-16 bottom-0 z-30 bg-white dark:bg-surface-900 border-r border-gray-200/80 dark:border-white/[0.06] transition-all duration-300 ${
+        className={`hidden md:flex fixed left-0 top-16 bottom-0 z-30 bg-white dark:bg-surface-900 border-r border-gray-200/80 dark:border-white/[0.06] transition-all duration-300 ease-out ${
           collapsed ? 'w-16' : 'w-56'
         }`}
+        style={{
+          transform: visible ? 'translateX(0)' : 'translateX(-14rem)',
+        }}
       >
         {sidebarContent}
       </aside>

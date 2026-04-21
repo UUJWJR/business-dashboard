@@ -13,59 +13,108 @@ export interface ParsedSheet {
   tables: ParsedTable[];
 }
 
+function countNonEmpty(row: unknown): number {
+  if (!Array.isArray(row)) return 0;
+  return row.filter((c) => c !== undefined && c !== null && c !== '').length;
+}
+
+function isEmptyRow(row: unknown): boolean {
+  if (!Array.isArray(row)) return true;
+  return row.every((c) => c === undefined || c === null || c === '');
+}
+
+function looksLikeHeader(row: unknown[]): boolean {
+  if (!Array.isArray(row) || row.length === 0) return false;
+  const nonEmpty = row.filter((c) => c !== undefined && c !== null && c !== '');
+  if (nonEmpty.length < 2) return false;
+  const stringCount = nonEmpty.filter((c) => typeof c === 'string').length;
+  return stringCount / nonEmpty.length >= 0.5;
+}
+
 function detectTables(rawData: unknown[][]): ParsedTable[] {
   const tables: ParsedTable[] = [];
   let currentStart = 0;
 
   for (let i = 0; i <= rawData.length; i++) {
-    const isEmptyRow =
-      i < rawData.length &&
-      (!rawData[i] || rawData[i].every((cell) => cell === undefined || cell === null || cell === ''));
-
-    const isSeparator = isEmptyRow || i === rawData.length;
+    const isSeparator = i === rawData.length || isEmptyRow(rawData[i]);
 
     if (isSeparator && currentStart < i) {
-      const segment = rawData.slice(currentStart, i);
+      const segment = rawData.slice(currentStart, i).filter((r) => !isEmptyRow(r));
       if (segment.length === 0) {
         currentStart = i + 1;
         continue;
       }
 
-      // Find the row with the most non-empty cells — treat it as the header
-      const headerRow = segment.reduce((best, row) => {
-        const nonEmpty = (row || []).filter((c) => c !== undefined && c !== null && c !== '').length;
-        const bestNonEmpty = (best || []).filter((c) => c !== undefined && c !== null && c !== '').length;
-        return nonEmpty >= bestNonEmpty ? row : best;
-      }, segment[0]);
+      let headerIdx = 0;
+      let tableTitle = '';
 
-      const headers = (headerRow || []).map((h) => String(h || ''));
-      const headerIdx = segment.indexOf(headerRow);
-      const dataRows = segment.slice(headerIdx + 1);
+      if (!looksLikeHeader(segment[0] as unknown[])) {
+        const firstNonEmpty = countNonEmpty(segment[0]);
+        if (firstNonEmpty <= 2) {
+          tableTitle = String((segment[0] as unknown[])[0] || '').trim();
+        }
 
-      // Determine the max column count across the segment to avoid truncation
-      const maxCols = Math.max(
-        headers.length,
-        ...segment.map((r) => (r || []).length)
-      );
+        let found = false;
+        for (let j = 1; j < Math.min(segment.length, 6); j++) {
+          if (looksLikeHeader(segment[j] as unknown[])) {
+            headerIdx = j;
+            found = true;
+            break;
+          }
+        }
 
-      // Pad headers to max column count so we don't lose trailing columns
+        if (!found) {
+          let best = 0;
+          let max = countNonEmpty(segment[0]);
+          for (let j = 1; j < segment.length; j++) {
+            const cnt = countNonEmpty(segment[j]);
+            if (cnt > max) {
+              max = cnt;
+              best = j;
+            }
+          }
+          headerIdx = best;
+        }
+      }
+
+      const headerRow = segment[headerIdx] as unknown[];
+      const headers = (headerRow || []).map((h) => String(h || '').trim());
+
+      let maxColIdx = headers.length - 1;
+      for (let r = headerIdx + 1; r < segment.length; r++) {
+        const row = segment[r] as unknown[];
+        for (let c = row.length - 1; c >= 0; c--) {
+          if (row[c] !== undefined && row[c] !== null && row[c] !== '') {
+            maxColIdx = Math.max(maxColIdx, c);
+            break;
+          }
+        }
+      }
+      const maxCols = maxColIdx + 1;
+
       while (headers.length < maxCols) {
         headers.push(`列${headers.length + 1}`);
       }
 
+      const dataRows = segment.slice(headerIdx + 1);
       const rows: Record<string, string | number>[] = [];
+
       for (const rawRow of dataRows) {
-        const rowArr = rawRow || [];
-        if (rowArr.every((cell) => cell === undefined || cell === null || cell === '')) continue;
+        const rowArr = Array.isArray(rawRow) ? rawRow : [];
+        if (isEmptyRow(rowArr)) continue;
 
         const row: Record<string, string | number> = {};
+        let hasRealValue = false;
         for (let idx = 0; idx < maxCols; idx++) {
           const header = headers[idx];
           if (!header) continue;
           const val = rowArr[idx];
+          if (val !== undefined && val !== null && val !== '') {
+            hasRealValue = true;
+          }
           row[header] = typeof val === 'number' ? val : String(val ?? '');
         }
-        if (Object.keys(row).length > 0) {
+        if (hasRealValue) {
           rows.push(row);
         }
       }
@@ -73,13 +122,15 @@ function detectTables(rawData: unknown[][]): ParsedTable[] {
       if (rows.length > 0) {
         tables.push({
           id: `table-${tables.length}`,
-          title: headers.slice(0, 3).filter(Boolean).join(' / ') || `表格 ${tables.length + 1}`,
+          title: tableTitle || headers.filter(Boolean).slice(0, 3).join(' / ') || `表格 ${tables.length + 1}`,
           columns: headers.filter(Boolean),
           rows,
           rowCount: rows.length,
         });
       }
 
+      currentStart = i + 1;
+    } else if (isSeparator) {
       currentStart = i + 1;
     }
   }
@@ -93,25 +144,24 @@ export function parseExcelFile(file: File): Promise<ParsedSheet[]> {
     reader.onload = (e) => {
       try {
         const data = e.target?.result;
-        if (!data) {
+        if (!data || !(data instanceof ArrayBuffer)) {
           reject(new Error('文件读取失败'));
           return;
         }
-        const workbook = XLSX.read(data, { type: 'binary' });
+        const workbook = XLSX.read(data, { type: 'array' });
         const sheets: ParsedSheet[] = [];
 
-        workbook.SheetNames.forEach((sheetName) => {
+        for (const sheetName of workbook.SheetNames) {
           const worksheet = workbook.Sheets[sheetName];
-          // defval: '' ensures empty cells are included as '' so array length stays consistent
           const jsonData = XLSX.utils.sheet_to_json<unknown[]>(worksheet, { header: 1, defval: '' });
 
-          if (jsonData.length === 0) return;
+          if (!Array.isArray(jsonData) || jsonData.length === 0) continue;
 
           const tables = detectTables(jsonData);
-          if (tables.length === 0) return;
+          if (tables.length === 0) continue;
 
           sheets.push({ name: sheetName, tables });
-        });
+        }
 
         resolve(sheets);
       } catch (err) {
@@ -119,6 +169,6 @@ export function parseExcelFile(file: File): Promise<ParsedSheet[]> {
       }
     };
     reader.onerror = () => reject(new Error('文件读取失败'));
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
   });
 }

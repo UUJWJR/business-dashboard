@@ -32,9 +32,7 @@ export default function AIConclusionGenerator({
     setError('');
     try {
       const result = await generateConclusion(
-        config.apiKey,
-        config.model,
-        config.baseUrl,
+        config,
         tableData,
         title
       );
@@ -57,9 +55,7 @@ export default function AIConclusionGenerator({
     setError('');
     try {
       const result = await polishConclusion(
-        config.apiKey,
-        config.model,
-        config.baseUrl,
+        config,
         currentConclusion,
         '让表达更专业、更有洞察力'
       );

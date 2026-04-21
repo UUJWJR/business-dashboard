@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -10,9 +10,35 @@ interface ModuleLayoutProps {
   actions?: React.ReactNode;
 }
 
+const STORAGE_KEY_VISIBLE = 'sidebar-visible';
+const STORAGE_KEY_COLLAPSED = 'sidebar-collapsed';
+
+function loadBoolean(key: string, defaultValue: boolean): boolean {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : defaultValue;
+  } catch {
+    return defaultValue;
+  }
+}
+
 export default function ModuleLayout({ title, icon, children, actions }: ModuleLayoutProps) {
   const { isDark, toggleTheme } = useTheme();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(() => loadBoolean(STORAGE_KEY_VISIBLE, false));
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => loadBoolean(STORAGE_KEY_COLLAPSED, false));
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_VISIBLE, JSON.stringify(sidebarVisible));
+  }, [sidebarVisible]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_COLLAPSED, JSON.stringify(sidebarCollapsed));
+  }, [sidebarCollapsed]);
+
+  const mainPaddingClass = sidebarVisible
+    ? (sidebarCollapsed ? 'md:pl-16' : 'md:pl-56')
+    : 'md:pl-0';
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-950 transition-colors duration-300">
@@ -20,13 +46,17 @@ export default function ModuleLayout({ title, icon, children, actions }: ModuleL
         isDark={isDark}
         toggleTheme={toggleTheme}
         onMenuClick={() => setMobileSidebarOpen(true)}
+        onToggleSidebar={() => setSidebarVisible(v => !v)}
       />
       <Sidebar
+        visible={sidebarVisible}
+        collapsed={sidebarCollapsed}
+        onToggleCollapsed={() => setSidebarCollapsed(v => !v)}
         mobileOpen={mobileSidebarOpen}
         onMobileClose={() => setMobileSidebarOpen(false)}
       />
 
-      <main className="pt-16 pl-0 md:pl-56 transition-all duration-300">
+      <main className={`pt-16 pl-0 ${mainPaddingClass} transition-all duration-300`}>
         <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
           {/* Module title area */}
           <div className="flex items-center justify-between mb-6">

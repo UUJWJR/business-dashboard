@@ -11,7 +11,7 @@ interface Props {
 }
 
 const DEFAULTS = {
-  name: '写复盘会',
+  name: '市场复盘会',
   department: '市场部',
   author: '小项',
 };
@@ -87,11 +87,11 @@ export default function Step1Info({ initialData, onSubmit }: Props) {
         </div>
       </div>
 
-      <div className="mt-8 flex justify-end">
+      <div className="mt-8 flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
         <button
           type="submit"
           disabled={!isValid}
-          className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-white text-sm font-medium rounded-btn transition-colors"
+          className="px-6 py-2 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-white text-sm font-medium rounded-btn transition-colors"
         >
           下一步
         </button>

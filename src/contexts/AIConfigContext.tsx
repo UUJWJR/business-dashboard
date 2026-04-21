@@ -5,6 +5,11 @@ export interface AIConfig {
   model: string;
   baseUrl: string;
   enabled: boolean;
+  backup?: {
+    apiKey: string;
+    model: string;
+    baseUrl: string;
+  };
 }
 
 const STORAGE_KEY = 'dashboard-ai-config';
@@ -52,7 +57,10 @@ export function AIConfigProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const isConfigured = config.enabled && config.apiKey.length > 10;
+  const isConfigured = config.enabled && (
+    config.apiKey.length > 10 ||
+    (config.backup?.apiKey?.length ?? 0) > 10
+  );
 
   const exportConfig = useCallback(() => {
     const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });

@@ -1,7 +1,7 @@
 // Extracted from docs/ppt-design-system.md
 
 export const PPT_COLORS = {
-  // Brand blues
+  // Brand blues (legacy)
   brandDark: '#00467F',
   brandMid: '#0070C0',
   brandLight: '#D6E7F5',
@@ -24,6 +24,31 @@ export const PPT_COLORS = {
   dangerLight: '#FFCCC7',
   warning: '#FA8C16',
   referenceGray: '#8C8C8C',
+
+  // China Mobile 中国移动
+  cmBlue: '#0085CF',
+  cmGreen: '#00A650',
+  cmLight: '#E6F5FC',
+
+  // Alibaba 阿里巴巴
+  aliOrange: '#FF6A00',
+  aliDark: '#1A1A1A',
+  aliLight: '#FFF5EB',
+
+  // Tencent 腾讯商务
+  txBlue: '#00A4FF',
+  txDark: '#1E1E1E',
+  txLight: '#E6F7FF',
+
+  // ByteDance 字节跳动
+  bdBlue: '#3C8CFF',
+  bdDark: '#161823',
+  bdLight: '#EBF2FF',
+
+  // McKinsey 麦肯锡
+  mkBlue: '#003087',
+  mkDark: '#051C2C',
+  mkLight: '#F2F4F7',
 } as const;
 
 export const PPT_FONTS = {

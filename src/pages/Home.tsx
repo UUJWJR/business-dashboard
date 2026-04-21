@@ -13,7 +13,7 @@ export default function Home() {
   const { data } = useModuleData<HomePreviewData>('home-preview', timeRange);
 
   return (
-    <ModuleLayout title="工作台" icon={<LayoutDashboard className="w-6 h-6" />}>
+    <ModuleLayout title="EasyWork工作台" icon={<LayoutDashboard className="w-6 h-6" />}>
       <div className="flex items-center justify-between mb-6">
         <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
         <div className="text-sm text-gray-500 dark:text-gray-400">
