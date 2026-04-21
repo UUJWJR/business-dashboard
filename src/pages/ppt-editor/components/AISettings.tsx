@@ -6,6 +6,12 @@ interface Props {
   onClose: () => void;
 }
 
+function normalizeBaseUrl(url: string): string {
+  const trimmed = url.trim().replace(/\/$/, '');
+  if (/\/v\d+$/.test(trimmed)) return trimmed;
+  return `${trimmed}/v1`;
+}
+
 export default function AISettings({ onClose }: Props) {
   const { config, setConfig, isConfigured } = useAIConfig();
   const [testStatus, setTestStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
@@ -16,21 +22,39 @@ export default function AISettings({ onClose }: Props) {
     setTestStatus('testing');
     setTestMessage('');
 
+    const baseUrl = normalizeBaseUrl(config.baseUrl);
+
     try {
-      const response = await fetch(`${config.baseUrl}/models`, {
-        headers: { Authorization: `Bearer ${config.apiKey}` },
+      const response = await fetch(`${baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${config.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: config.model || 'gpt-4o-mini',
+          messages: [{ role: 'user', content: 'Hi' }],
+          max_tokens: 1,
+        }),
       });
 
       if (response.ok) {
         setTestStatus('success');
         setTestMessage('连接成功');
       } else {
+        let detail = '';
+        try {
+          const err = await response.json();
+          detail = err.error?.message || err.message || '';
+        } catch {
+          detail = await response.text().catch(() => '');
+        }
         setTestStatus('error');
-        setTestMessage(`连接失败 (${response.status})`);
+        setTestMessage(`连接失败 (${response.status})${detail ? `：${detail}` : ''}`);
       }
-    } catch {
+    } catch (err) {
       setTestStatus('error');
-      setTestMessage('网络请求失败，请检查 Base URL');
+      setTestMessage(err instanceof Error ? err.message : '网络请求失败，请检查 Base URL');
     }
   };
 
@@ -99,7 +123,7 @@ export default function AISettings({ onClose }: Props) {
               type="text"
               value={config.baseUrl}
               onChange={(e) => setConfig({ baseUrl: e.target.value })}
-              placeholder="https://api.openai.com/v1"
+              placeholder="https://api.openai.com/v1（自动补全 /v1）"
               className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>

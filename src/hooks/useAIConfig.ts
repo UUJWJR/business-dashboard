@@ -47,6 +47,12 @@ export function useAIConfig() {
   return { config, setConfig, isConfigured };
 }
 
+function normalizeBaseUrl(url: string): string {
+  const trimmed = url.trim().replace(/\/$/, '');
+  if (/\/v\d+$/.test(trimmed)) return trimmed;
+  return `${trimmed}/v1`;
+}
+
 export async function generateConclusion(
   apiKey: string,
   model: string,
@@ -69,7 +75,7 @@ ${tableData.rows.slice(0, 5).map((row) => tableData.columns.map((c) => `${c}: ${
 
 请直接输出结论文本，不要添加任何前缀或说明。`;
 
-  const response = await fetch(`${baseUrl}/chat/completions`, {
+  const response = await fetch(`${normalizeBaseUrl(baseUrl)}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -113,7 +119,7 @@ ${conclusion}
 
 请直接输出修改后的文本，不要添加任何前缀或说明。`;
 
-  const response = await fetch(`${baseUrl}/chat/completions`, {
+  const response = await fetch(`${normalizeBaseUrl(baseUrl)}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
