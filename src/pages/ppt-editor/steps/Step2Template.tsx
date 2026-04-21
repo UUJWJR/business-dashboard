@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
-import { ChevronDown, ChevronUp, Upload } from 'lucide-react';
-import type { PptSlideData } from '../../../types/ppt';
+import { useState, useMemo, useCallback } from 'react';
+import { Upload, Sparkles, Loader2, Settings, Palette } from 'lucide-react';
+import type { PptSlideData, PptTemplate } from '../../../types/ppt';
 import { PPT_TEMPLATES } from '../../../utils/pptTemplates';
 import { generateWeekReviewData } from '../../../utils/dataGenerator';
 import {
@@ -12,6 +12,10 @@ import {
   weekReviewSummarySummary,
 } from '../../../utils/slideSummary';
 import ExcelImporter from '../components/ExcelImporter';
+import DraggableSlideList from '../components/DraggableSlideList';
+import TemplateDesigner from '../components/TemplateDesigner';
+import AISettings from '../components/AISettings';
+import { useAIConfig, generateConclusion } from '../../../hooks/useAIConfig';
 import type { ParsedSheet } from '../../../utils/excelParser';
 
 interface Props {
@@ -23,6 +27,22 @@ interface Props {
 const DATA_SOURCES = [
   { id: 'week-review', label: '周四复盘', pageCount: 6 },
 ];
+
+const CUSTOM_TEMPLATES_KEY = 'dashboard-ppt-custom-templates';
+
+function loadCustomTemplates(): PptTemplate[] {
+  try {
+    const raw = localStorage.getItem(CUSTOM_TEMPLATES_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+
+function saveCustomTemplates(templates: PptTemplate[]) {
+  localStorage.setItem(CUSTOM_TEMPLATES_KEY, JSON.stringify(templates));
+}
 
 function generateSlides(sourceId: string): PptSlideData[] {
   if (sourceId !== 'week-review') return [];
@@ -49,19 +69,28 @@ function generateSlides(sourceId: string): PptSlideData[] {
 }
 
 export default function Step2Template({ initialSlides, initialTemplateId, onSubmit }: Props) {
-  const [selectedTemplateId, setSelectedTemplateId] = useState(initialTemplateId || PPT_TEMPLATES[0].id);
+  const [customTemplates, setCustomTemplates] = useState<PptTemplate[]>(loadCustomTemplates);
+  const allTemplates = useMemo(() => [...PPT_TEMPLATES, ...customTemplates], [customTemplates]);
+
+  const [selectedTemplateId, setSelectedTemplateId] = useState(() => {
+    const templates = [...PPT_TEMPLATES, ...loadCustomTemplates()];
+    return initialTemplateId || templates[0]?.id || PPT_TEMPLATES[0].id;
+  });
   const [selectedSource, setSelectedSource] = useState(DATA_SOURCES[0].id);
   const [slides, setSlides] = useState<PptSlideData[]>(initialSlides || generateSlides(DATA_SOURCES[0].id));
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [showImporter, setShowImporter] = useState(false);
+  const [showDesigner, setShowDesigner] = useState(false);
+  const [showAISettings, setShowAISettings] = useState(false);
+  const [bulkGenerating, setBulkGenerating] = useState(false);
 
-  const selectedTemplate = PPT_TEMPLATES.find((t) => t.id === selectedTemplateId)!;
+  const { config, isConfigured } = useAIConfig();
+
+  const selectedTemplate = allTemplates.find((t) => t.id === selectedTemplateId)!;
 
   const handleSourceChange = (sourceId: string) => {
     setSelectedSource(sourceId);
     setSlides(generateSlides(sourceId));
-    setExpandedIndex(0);
     setErrors({});
   };
 
@@ -72,11 +101,14 @@ export default function Step2Template({ initialSlides, initialTemplateId, onSubm
       return next;
     });
 
-    // Clear error for this field if within limit
     const limits: Record<string, number> = { title: 20, conclusion: 150, note: 40 };
     if (limits[field] !== undefined) {
       setErrors((prev) => ({ ...prev, [`${index}-${field}`]: value.length > limits[field] }));
     }
+  };
+
+  const handleReorder = (reordered: PptSlideData[]) => {
+    setSlides(reordered);
   };
 
   const hasErrors = useMemo(() => {
@@ -120,6 +152,51 @@ export default function Step2Template({ initialSlides, initialTemplateId, onSubm
     setShowImporter(false);
   };
 
+  const handleSaveTemplate = (template: PptTemplate) => {
+    const next = [...customTemplates, template];
+    setCustomTemplates(next);
+    saveCustomTemplates(next);
+    setSelectedTemplateId(template.id);
+    setShowDesigner(false);
+  };
+
+  const handleBulkGenerate = useCallback(async () => {
+    if (!isConfigured) {
+      setShowAISettings(true);
+      return;
+    }
+
+    const tableSlides = slides
+      .map((slide, index) => ({ slide, index }))
+      .filter(({ slide }) => slide.content.type === 'table');
+
+    if (tableSlides.length === 0) return;
+
+    setBulkGenerating(true);
+
+    for (const { slide, index } of tableSlides) {
+      try {
+        const tableData = slide.content as {
+          type: 'table';
+          columns: string[];
+          rows: Record<string, string | number>[];
+        };
+        const result = await generateConclusion(
+          config.apiKey,
+          config.model,
+          config.baseUrl,
+          tableData,
+          slide.title
+        );
+        updateSlide(index, 'conclusion', result);
+      } catch {
+        // Skip failed slides, continue with others
+      }
+    }
+
+    setBulkGenerating(false);
+  }, [isConfigured, slides, config]);
+
   return (
     <div className="flex flex-col lg:flex-row gap-6">
       {/* Left: Template selection */}
@@ -142,11 +219,20 @@ export default function Step2Template({ initialSlides, initialTemplateId, onSubm
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            选择模板
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              选择模板
+            </label>
+            <button
+              onClick={() => setShowDesigner(true)}
+              className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400"
+            >
+              <Palette className="w-3 h-3" />
+              自定义
+            </button>
+          </div>
           <div className="space-y-2">
-            {PPT_TEMPLATES.map((template) => (
+            {allTemplates.map((template) => (
               <button
                 key={template.id}
                 onClick={() => setSelectedTemplateId(template.id)}
@@ -208,13 +294,34 @@ export default function Step2Template({ initialSlides, initialTemplateId, onSubm
           <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
             页面配置（共 {slides.length} 页）
           </h3>
-          <button
-            onClick={() => setShowImporter((v) => !v)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
-          >
-            <Upload className="w-4 h-4" />
-            {showImporter ? '取消导入' : '导入 Excel'}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowAISettings(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              AI 配置
+            </button>
+            <button
+              onClick={handleBulkGenerate}
+              disabled={bulkGenerating}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-md transition-colors disabled:opacity-50"
+            >
+              {bulkGenerating ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Sparkles className="w-3 h-3" />
+              )}
+              一键生成全部分析结论
+            </button>
+            <button
+              onClick={() => setShowImporter((v) => !v)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+            >
+              <Upload className="w-4 h-4" />
+              {showImporter ? '取消导入' : '导入 Excel'}
+            </button>
+          </div>
         </div>
 
         {showImporter && (
@@ -226,108 +333,12 @@ export default function Step2Template({ initialSlides, initialTemplateId, onSubm
           />
         )}
 
-        {slides.map((slide, index) => {
-          const isExpanded = expandedIndex === index;
-          const titleError = slide.title.length > 20 || errors[`${index}-title`];
-          const conclusionError = slide.conclusion.length > 150 || errors[`${index}-conclusion`];
-          const noteError = slide.note.length > 40 || errors[`${index}-note`];
-
-          return (
-            <div
-              key={slide.id}
-              className={`rounded-lg border bg-white dark:bg-gray-800 overflow-hidden ${
-                isExpanded
-                  ? 'border-primary-200 dark:border-primary-800'
-                  : 'border-gray-200 dark:border-gray-700'
-              }`}
-            >
-              <button
-                onClick={() => setExpandedIndex(isExpanded ? null : index)}
-                className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 text-xs flex items-center justify-center text-gray-600 dark:text-gray-300">
-                    {index + 1}
-                  </span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[300px]">
-                    {slide.title}
-                  </span>
-                  {(titleError || conclusionError || noteError) && (
-                    <span className="text-xs text-red-500">字数超限</span>
-                  )}
-                </div>
-                {isExpanded ? (
-                  <ChevronUp className="w-4 h-4 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
-                )}
-              </button>
-
-              {isExpanded && (
-                <div className="px-4 pb-4 space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      标题（最多20字）
-                    </label>
-                    <input
-                      type="text"
-                      value={slide.title}
-                      onChange={(e) => updateSlide(index, 'title', e.target.value)}
-                      maxLength={25}
-                      className={`w-full px-3 py-2 rounded-md border text-sm focus:outline-none focus:ring-2 ${
-                        titleError
-                          ? 'border-red-300 focus:ring-red-200 bg-red-50 dark:bg-red-900/10'
-                          : 'border-gray-200 dark:border-gray-700 focus:ring-primary-200 bg-white dark:bg-gray-800'
-                      } text-gray-900 dark:text-white`}
-                    />
-                    <p className={`mt-0.5 text-xs text-right ${titleError ? 'text-red-500' : 'text-gray-400'}`}>
-                      {slide.title.length}/20
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      结论（最多150字）
-                    </label>
-                    <textarea
-                      value={slide.conclusion}
-                      onChange={(e) => updateSlide(index, 'conclusion', e.target.value)}
-                      rows={3}
-                      className={`w-full px-3 py-2 rounded-md border text-sm focus:outline-none focus:ring-2 resize-none ${
-                        conclusionError
-                          ? 'border-red-300 focus:ring-red-200 bg-red-50 dark:bg-red-900/10'
-                          : 'border-gray-200 dark:border-gray-700 focus:ring-primary-200 bg-white dark:bg-gray-800'
-                      } text-gray-900 dark:text-white`}
-                    />
-                    <p className={`mt-0.5 text-xs text-right ${conclusionError ? 'text-red-500' : 'text-gray-400'}`}>
-                      {slide.conclusion.length}/150
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      备注（最多40字）
-                    </label>
-                    <input
-                      type="text"
-                      value={slide.note}
-                      onChange={(e) => updateSlide(index, 'note', e.target.value)}
-                      maxLength={45}
-                      className={`w-full px-3 py-2 rounded-md border text-sm focus:outline-none focus:ring-2 ${
-                        noteError
-                          ? 'border-red-300 focus:ring-red-200 bg-red-50 dark:bg-red-900/10'
-                          : 'border-gray-200 dark:border-gray-700 focus:ring-primary-200 bg-white dark:bg-gray-800'
-                      } text-gray-900 dark:text-white`}
-                    />
-                    <p className={`mt-0.5 text-xs text-right ${noteError ? 'text-red-500' : 'text-gray-400'}`}>
-                      {slide.note.length}/40
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+        <DraggableSlideList
+          slides={slides}
+          errors={errors}
+          onReorder={handleReorder}
+          onUpdateSlide={updateSlide}
+        />
 
         <div className="flex justify-end pt-4">
           <button
@@ -339,6 +350,11 @@ export default function Step2Template({ initialSlides, initialTemplateId, onSubm
           </button>
         </div>
       </div>
+
+      {showDesigner && (
+        <TemplateDesigner onSave={handleSaveTemplate} onCancel={() => setShowDesigner(false)} />
+      )}
+      {showAISettings && <AISettings onClose={() => setShowAISettings(false)} />}
     </div>
   );
 }
