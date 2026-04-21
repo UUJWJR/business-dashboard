@@ -87,7 +87,6 @@ ${tableData.rows.slice(0, 5).map((row) => tableData.columns.map((c) => `${c}: ${
         { role: 'system', content: '你是一位资深数据分析师，擅长从表格数据中提取关键洞察并生成简洁有力的分析结论。' },
         { role: 'user', content: prompt },
       ],
-      temperature: 0.7,
       max_tokens: 300,
     }),
   });
@@ -131,7 +130,6 @@ ${conclusion}
         { role: 'system', content: '你是一位专业的商务文案编辑，擅长优化分析报告的表达。' },
         { role: 'user', content: prompt },
       ],
-      temperature: 0.6,
       max_tokens: 300,
     }),
   });
